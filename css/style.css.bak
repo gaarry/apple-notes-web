@@ -3,7 +3,6 @@
 :root {
     /* Apple Colors */
     --system-blue: #007AFF;
-    --system-blue-light: rgba(0, 122, 255, 0.1);
     --system-gray: #8E8E93;
     --system-gray02: #F2F2F7;
     --system-gray05: #E5E5EA;
@@ -24,13 +23,11 @@
     
     /* Shadows */
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 122, 255, 0.15);
-    --shadow-lg: 0 8px 24px rgba(0, 122, 255, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     
     /* Transitions */
     --transition-fast: 0.15s ease;
     --transition-normal: 0.25s ease;
-    --transition-slow: 0.35s ease;
     
     /* Sidebar Width */
     --sidebar-width: 280px;
@@ -72,7 +69,6 @@ html, body {
 ::-webkit-scrollbar-thumb {
     background: var(--system-gray08);
     border-radius: 4px;
-    transition: background var(--transition-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -102,7 +98,6 @@ button {
     cursor: pointer;
     font-family: inherit;
     font-size: inherit;
-    -webkit-tap-highlight-color: transparent;
 }
 
 /* Input Reset */
@@ -126,7 +121,6 @@ svg {
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    transition: transform var(--transition-fast), stroke var(--transition-fast);
 }
 
 /* Main Content Area */
@@ -136,7 +130,6 @@ svg {
     flex-direction: column;
     background: var(--main-bg);
     overflow: hidden;
-    transition: background-color var(--transition-normal);
 }
 
 /* Welcome Screen */
@@ -146,18 +139,6 @@ svg {
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
-    animation: fadeInUp 0.5s ease;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .welcome-content {
@@ -170,16 +151,6 @@ svg {
     height: 80px;
     margin: 0 auto 24px;
     opacity: 0.4;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
 }
 
 .welcome-content h1 {
@@ -187,13 +158,11 @@ svg {
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 8px;
-    animation: fadeInUp 0.5s ease 0.1s both;
 }
 
 .welcome-content p {
     font-size: 17px;
     color: var(--text-secondary);
-    animation: fadeInUp 0.5s ease 0.2s both;
 }
 
 /* Editor Container */
@@ -202,12 +171,6 @@ svg {
     display: flex;
     flex-direction: column;
     height: 100%;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
 }
 
 .editor-header {
@@ -226,13 +189,11 @@ svg {
 .note-date {
     font-size: 13px;
     color: var(--text-secondary);
-    animation: fadeIn 0.3s ease;
 }
 
 .word-count {
     font-size: 13px;
     color: var(--text-tertiary);
-    animation: fadeIn 0.3s ease;
 }
 
 .editor-actions {
@@ -254,11 +215,6 @@ svg {
 .action-btn:hover {
     background: var(--hover-bg);
     color: var(--system-blue);
-    transform: scale(1.05);
-}
-
-.action-btn:active {
-    transform: scale(0.95);
 }
 
 /* Editor ContentEditable */
@@ -269,7 +225,6 @@ svg {
     line-height: 1.6;
     overflow-y: auto;
     outline: none;
-    transition: padding var(--transition-normal);
 }
 
 .editor:empty::before {
@@ -280,30 +235,24 @@ svg {
 
 .editor p {
     margin-bottom: 16px;
-    animation: fadeIn 0.3s ease;
 }
 
 .editor h1 {
     font-size: 28px;
     font-weight: 600;
     margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--system-gray05);
-    animation: fadeIn 0.3s ease;
 }
 
 .editor h2 {
     font-size: 22px;
     font-weight: 600;
     margin-bottom: 12px;
-    animation: fadeIn 0.3s ease;
 }
 
 .editor h3 {
     font-size: 19px;
     font-weight: 600;
     margin-bottom: 8px;
-    animation: fadeIn 0.3s ease;
 }
 
 .editor ul, .editor ol {
@@ -313,7 +262,6 @@ svg {
 
 .editor li {
     margin-bottom: 4px;
-    animation: fadeIn 0.3s ease;
 }
 
 .editor code {
@@ -343,7 +291,6 @@ svg {
 .editor a {
     color: var(--system-blue);
     text-decoration: none;
-    transition: all var(--transition-fast);
 }
 
 .editor a:hover {
@@ -360,7 +307,6 @@ svg {
         z-index: 100;
         transform: translateX(-100%);
         transition: transform var(--transition-normal);
-        box-shadow: var(--shadow-lg);
     }
     
     .sidebar.open {
@@ -369,14 +315,5 @@ svg {
     
     .editor {
         padding: 16px 24px;
-    }
-    
-    .welcome-icon {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .welcome-content h1 {
-        font-size: 24px;
     }
 }

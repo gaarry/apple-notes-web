@@ -34,6 +34,7 @@
     stroke: var(--text-tertiary);
     stroke-width: 2;
     pointer-events: none;
+    transition: stroke var(--transition-fast);
 }
 
 .search-box input {
@@ -55,6 +56,10 @@
 .search-box input:focus {
     border-color: var(--system-blue);
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.search-box input:focus + .search-icon {
+    stroke: var(--system-blue);
 }
 
 /* New Note Button */
@@ -145,6 +150,18 @@
     transition: all var(--transition-fast);
     position: relative;
     overflow: hidden;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .note-item:hover {
@@ -155,9 +172,28 @@
     background: var(--active-bg);
 }
 
+.note-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: var(--system-blue);
+    border-radius: 0 2px 2px 0;
+}
+
 .note-item.deleting {
     opacity: 0.5;
     background: #FF3B30;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
 }
 
 .note-title {
@@ -168,6 +204,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color var(--transition-fast);
+}
+
+.note-item:hover .note-title {
+    color: var(--system-blue);
 }
 
 .note-preview {
@@ -201,6 +242,7 @@
     text-align: center;
     color: var(--text-tertiary);
     font-size: 14px;
+    animation: fadeIn 0.3s ease;
 }
 
 /* Sidebar Footer */
@@ -225,11 +267,13 @@
 .delete-mode-btn:hover {
     background: var(--hover-bg);
     color: #FF3B30;
+    transform: scale(1.05);
 }
 
 .delete-mode-btn.active {
     background: #FF3B30;
     color: var(--system-white);
+    transform: scale(0.95);
 }
 
 .delete-mode-btn svg {
