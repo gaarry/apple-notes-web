@@ -59,30 +59,57 @@
 
 /* New Note Button */
 .new-note-btn {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--system-blue);
+    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
     color: var(--system-white);
-    border-radius: 8px;
+    border-radius: 10px;
     transition: all var(--transition-fast);
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
 }
 
 .new-note-btn:hover {
-    background: #0056b3;
-    transform: scale(1.05);
+    background: linear-gradient(135deg, #0056b3 0%, #4747b3 100%);
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
 }
 
 .new-note-btn:active {
     transform: scale(0.95);
+    box-shadow: 0 1px 4px rgba(0, 122, 255, 0.3);
 }
 
 .new-note-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
+}
+
+/* Add tooltip */
+.new-note-btn::after {
+    content: 'New Note';
+    position: absolute;
+    left: 100%;
+    margin-left: 8px;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all var(--transition-fast);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.new-note-btn:hover::after {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 /* Notes Navigation */
