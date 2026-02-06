@@ -153,9 +153,9 @@ const Render = {
             // Click handler
             li.addEventListener('click', () => {
                 if (AppState.isDeleteMode) {
-                    deleteNote(note.id);
+                    Actions.deleteNote(note.id);
                 } else {
-                    selectNote(note.id);
+                    Actions.selectNote(note.id);
                 }
             });
             
