@@ -1,0 +1,439 @@
+/* Apple Notes Web - Editor Styles */
+
+/* Editor enhancements */
+.editor {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.editor * {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+/* Placeholder styling */
+.editor:empty {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 60px;
+}
+
+.editor:empty::before {
+    content: attr(placeholder);
+    color: var(--text-tertiary);
+    font-size: 17px;
+    font-weight: 300;
+}
+
+/* Focus state */
+.editor:focus {
+    outline: none;
+}
+
+/* Selection styling in editor */
+.editor ::selection {
+    background: rgba(0, 122, 255, 0.3);
+}
+
+/* Cursor styling */
+.editor {
+    caret-color: var(--system-blue);
+}
+
+/* Typography enhancements */
+.editor {
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+/* Paragraph spacing */
+.editor p + p {
+    margin-top: 0;
+}
+
+.editor p:last-child {
+    margin-bottom: 0;
+}
+
+/* Header styling */
+.editor h1,
+.editor h2,
+.editor h3 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.editor h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--system-gray05);
+}
+
+.editor h2 {
+    font-size: 24px;
+    line-height: 1.3;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.editor h3 {
+    font-size: 20px;
+    line-height: 1.4;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+/* List styling */
+.editor ul,
+.editor ol {
+    padding-left: 28px;
+}
+
+.editor li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.editor li::marker {
+    color: var(--system-gray);
+}
+
+/* Task list */
+.editor ul[type="task"] {
+    list-style: none;
+    padding-left: 0;
+}
+
+.editor ul[type="task"] li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.editor ul[type="task"] li::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--system-gray);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.editor ul[type="task"] li.checked::before {
+    background: var(--system-blue);
+    border-color: var(--system-blue);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 12px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Checkbox styling */
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--system-gray);
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+}
+
+.checkbox.checked {
+    background: var(--system-blue);
+    border-color: var(--system-blue);
+}
+
+/* Code blocks */
+.editor code {
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: #D63031;
+}
+
+.editor pre {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--system-gray05);
+    padding: 16px;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.editor pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Blockquote */
+.editor blockquote {
+    border-left: 3px solid var(--system-blue);
+    padding-left: 20px;
+    margin: 20px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Links */
+.editor a {
+    color: var(--system-blue);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--transition-fast);
+}
+
+.editor a:hover {
+    border-bottom-color: var(--system-blue);
+}
+
+/* Horizontal rule */
+.editor hr {
+    border: none;
+    border-top: 1px solid var(--system-gray05);
+    margin: 24px 0;
+}
+
+/* Image styling */
+.editor img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+/* Table styling */
+.editor table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+}
+
+.editor th,
+.editor td {
+    border: 1px solid var(--system-gray05);
+    padding: 10px 14px;
+    text-align: left;
+}
+
+.editor th {
+    background: var(--system-gray02);
+    font-weight: 600;
+}
+
+.editor tr:hover td {
+    background: var(--system-gray02);
+}
+
+/* Highlight */
+.editor mark {
+    background: #FFEAA7;
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+/* Strikethrough */
+.editor s,
+.editor strike {
+    color: var(--text-tertiary);
+}
+
+/* Subscript and Superscript */
+.editor sub,
+.editor sup {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Inline formatting */
+.editor strong,
+.editor b {
+    font-weight: 600;
+}
+
+.editor em,
+.editor i {
+    font-style: italic;
+}
+
+/* Color text */
+.editor span[style*="color"] {
+    opacity: 0.9;
+}
+
+/* Editor toolbar (floating) */
+.editor-toolbar {
+    position: fixed;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--system-white);
+    border: 1px solid var(--system-gray05);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    z-index: 100;
+}
+
+.editor-container:hover .editor-toolbar,
+.editor-toolbar:hover {
+    opacity: 1;
+}
+
+.toolbar-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.toolbar-btn:hover {
+    background: var(--hover-bg);
+    color: var(--system-blue);
+}
+
+.toolbar-btn.active {
+    background: var(--active-bg);
+    color: var(--system-blue);
+}
+
+.toolbar-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Formatting popup */
+.format-popup {
+    position: fixed;
+    background: var(--system-white);
+    border: 1px solid var(--system-gray05);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    gap: 4px;
+    z-index: 200;
+}
+
+.format-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.format-btn:hover {
+    background: var(--hover-bg);
+}
+
+.format-btn.active {
+    background: var(--active-bg);
+    color: var(--system-blue);
+}
+
+/* Character count */
+.char-count {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-left: auto;
+}
+
+/* Last sync indicator */
+.sync-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.sync-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--system-green);
+}
+
+.sync-indicator.syncing {
+    background: var(--system-orange);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .editor-header,
+    .editor-toolbar {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .editor {
+        padding: 0;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .editor code {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .editor pre {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .editor th {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .editor tr:hover td {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}

@@ -1,0 +1,319 @@
+/* Apple Notes Web - Main Styles */
+
+:root {
+    /* Apple Colors */
+    --system-blue: #007AFF;
+    --system-gray: #8E8E93;
+    --system-gray02: #F2F2F7;
+    --system-gray05: #E5E5EA;
+    --system-gray08: #C7C7CC;
+    --system-black: #000000;
+    --system-white: #FFFFFF;
+    
+    /* Background Colors */
+    --sidebar-bg: #F2F2F7;
+    --main-bg: #FFFFFF;
+    --hover-bg: rgba(0, 122, 255, 0.1);
+    --active-bg: rgba(0, 122, 255, 0.15);
+    
+    /* Text Colors */
+    --text-primary: #000000;
+    --text-secondary: #8E8E93;
+    --text-tertiary: #C7C7CC;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    
+    /* Sidebar Width */
+    --sidebar-width: 280px;
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* App Container */
+.app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--system-gray08);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--system-gray);
+}
+
+/* Selection */
+::selection {
+    background: var(--system-blue);
+    color: var(--system-white);
+}
+
+/* Focus States */
+:focus {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--system-blue);
+    outline-offset: 2px;
+}
+
+/* Button Reset */
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* Input Reset */
+input {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    background: none;
+}
+
+input:focus {
+    outline: none;
+}
+
+/* SVG Icons */
+svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--main-bg);
+    overflow: hidden;
+}
+
+/* Welcome Screen */
+.welcome-screen {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.welcome-content {
+    text-align: center;
+    padding: 40px;
+}
+
+.welcome-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    opacity: 0.4;
+}
+
+.welcome-content h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.welcome-content p {
+    font-size: 17px;
+    color: var(--text-secondary);
+}
+
+/* Editor Container */
+.editor-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--system-gray05);
+}
+
+.editor-info {
+    display: flex;
+    gap: 16px;
+}
+
+.note-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.word-count {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+.editor-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--system-gray);
+    transition: all var(--transition-fast);
+}
+
+.action-btn:hover {
+    background: var(--hover-bg);
+    color: var(--system-blue);
+}
+
+/* Editor ContentEditable */
+.editor {
+    flex: 1;
+    padding: 24px 48px;
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-y: auto;
+    outline: none;
+}
+
+.editor:empty::before {
+    content: attr(placeholder);
+    color: var(--text-tertiary);
+    pointer-events: none;
+}
+
+.editor p {
+    margin-bottom: 16px;
+}
+
+.editor h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.editor h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.editor h3 {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.editor ul, .editor ol {
+    padding-left: 24px;
+    margin-bottom: 16px;
+}
+
+.editor li {
+    margin-bottom: 4px;
+}
+
+.editor code {
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 14px;
+    background: var(--system-gray02);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.editor pre {
+    background: var(--system-gray02);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+.editor blockquote {
+    border-left: 3px solid var(--system-blue);
+    padding-left: 16px;
+    margin: 16px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.editor a {
+    color: var(--system-blue);
+    text-decoration: none;
+}
+
+.editor a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform var(--transition-normal);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .editor {
+        padding: 16px 24px;
+    }
+}

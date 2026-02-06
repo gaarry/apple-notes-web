@@ -1,0 +1,18 @@
+{
+  "name": "apple-notes-web",
+  "version": "1.0.0",
+  "description": "A beautiful, Apple-inspired notes web application",
+  "main": "index.html",
+  "scripts": {
+    "start": "open index.html",
+    "dev": "npx serve ."
+  },
+  "keywords": [
+    "notes",
+    "apple",
+    "web-app",
+    "pwa"
+  ],
+  "author": "Gary",
+  "license": "MIT"
+}
