@@ -58,6 +58,11 @@ export default function GistSync({ notes, onNotesLoaded, onSync }) {
   }, [onNotesLoaded]);
 
   const saveNotes = useCallback(async () => {
+    if (!notes || !Array.isArray(notes)) {
+      setStatus({ type: 'error', message: 'No notes to save' });
+      return;
+    }
+    
     if (!config.token) {
       setStatus({ type: 'error', message: 'Token required for saving' });
       setMode('write');
