@@ -1,18 +1,26 @@
 {
   "name": "apple-notes-web",
-  "version": "1.0.0",
-  "description": "A beautiful, Apple-inspired notes web application",
-  "main": "index.html",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "open index.html",
-    "dev": "npx serve ."
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node test.js"
   },
-  "keywords": [
-    "notes",
-    "apple",
-    "web-app",
-    "pwa"
-  ],
-  "author": "Gary",
-  "license": "MIT"
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tiptap/react": "^2.1.0",
+    "@tiptap/starter-kit": "^2.1.0",
+    "@tiptap/extension-image": "^2.1.0",
+    "@tiptap/extension-link": "^2.1.0",
+    "@tiptap/extension-placeholder": "^2.1.0",
+    "lucide-react": "^0.294.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^5.0.0"
+  }
 }

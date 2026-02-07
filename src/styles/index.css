@@ -1,0 +1,132 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-main, #fff);
+  color: var(--text-primary, #000);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Root variables */
+:root {
+  /* Primary */
+  --primary: #007aff;
+  --primary-hover: #0056b3;
+  --primary-light: rgba(0, 122, 255, 0.1);
+
+  /* Background */
+  --bg-sidebar: #f2f2f7;
+  --bg-main: #ffffff;
+  --bg-hover: rgba(0, 122, 255, 0.08);
+
+  /* Text */
+  --text-primary: #000000;
+  --text-secondary: #8e8e93;
+  --text-tertiary: #c7c7cc;
+
+  /* Border */
+  --border-color: #e5e5e5;
+
+  /* Status */
+  --success: #34c759;
+  --warning: #ff9500;
+  --danger: #ff3b30;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* Dark mode class */
+html.dark {
+  /* Primary */
+  --primary: #0a84ff;
+  --primary-hover: #409cff;
+  --primary-light: rgba(10, 132, 255, 0.2);
+
+  /* Background */
+  --bg-sidebar: #1c1c1e;
+  --bg-main: #000000;
+  --bg-hover: rgba(255, 255, 255, 0.1);
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #8e8e93;
+  --text-tertiary: #636366;
+
+  /* Border */
+  --border-color: #38383a;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-sidebar: #1c1c1e;
+    --bg-main: #000000;
+    --bg-hover: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: #8e8e93;
+    --text-tertiary: #636366;
+    --border-color: #38383a;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary, #c7c7cc);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary, #8e8e93);
+}
+
+/* Focus states */
+*:focus-visible {
+  outline: 2px solid var(--primary, #007aff);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 122, 255, 0.3);
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+}
+
+/* Inputs */
+input,
+textarea {
+  font-family: inherit;
+}
+
+/* Links */
+a {
+  color: var(--primary, #007aff);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

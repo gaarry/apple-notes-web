@@ -1,0 +1,273 @@
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-main, #fff);
+}
+
+.welcome-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-content {
+  text-align: center;
+  color: var(--text-secondary, #8e8e93);
+}
+
+.welcome-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  color: var(--text-tertiary, #c7c7cc);
+}
+
+.welcome-content h1 {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text-primary, #000);
+  margin: 0 0 8px;
+}
+
+.welcome-content p {
+  font-size: 15px;
+  margin: 0;
+}
+
+/* Editor Container */
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 48px;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.editor-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.save-status {
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.save-status.saved {
+  color: var(--success, #34c759);
+}
+
+.save-status.saving {
+  color: var(--warning, #ff9500);
+}
+
+.save-status.unsaved {
+  color: var(--text-secondary, #8e8e93);
+}
+
+.note-date {
+  font-size: 13px;
+  color: var(--text-secondary, #8e8e93);
+}
+
+.word-count {
+  font-size: 13px;
+  color: var(--text-tertiary, #c7c7cc);
+}
+
+.editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary, #8e8e93);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: var(--bg-hover, rgba(0, 122, 255, 0.1));
+  color: var(--primary, #007aff);
+}
+
+.action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.action-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.delete-confirm-btn {
+  padding: 8px 16px;
+  background: #ff3b30;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-btn:hover {
+  background: #d63027;
+}
+
+/* Title */
+.editor-title {
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  border-bottom: 1px solid transparent;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary, #000);
+  outline: none;
+  background: transparent;
+  margin-bottom: 16px;
+}
+
+.editor-title::placeholder {
+  color: var(--text-tertiary, #c7c7cc);
+}
+
+.editor-title:focus {
+  border-bottom-color: var(--primary, #007aff);
+}
+
+/* Editor Content */
+.editor-wrapper {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.editor-content {
+  min-height: 200px;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary, #000);
+}
+
+.editor-content:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-tertiary, #c7c7cc);
+  pointer-events: none;
+}
+
+/* Tiptap Styles */
+.editor-content p {
+  margin: 0 0 8px;
+}
+
+.editor-content h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
+
+.editor-content h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+.editor-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 12px 0 4px;
+}
+
+.editor-content ul,
+.editor-content ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.editor-content blockquote {
+  border-left: 3px solid var(--primary, #007aff);
+  padding-left: 16px;
+  margin: 12px 0;
+  color: var(--text-secondary, #8e8e93);
+  font-style: italic;
+}
+
+.editor-content code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: SF Mono, Monaco, monospace;
+  font-size: 14px;
+}
+
+.editor-content pre {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.editor-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.editor-content hr {
+  border: none;
+  border-top: 1px solid var(--border-color, #e5e5e5);
+  margin: 16px 0;
+}
+
+/* Links */
+.editor-link {
+  color: var(--primary, #007aff);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.editor-link:hover {
+  text-decoration: underline;
+}
+
+/* Images */
+.editor-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .editor-container {
+    padding: 16px 24px;
+  }
+}

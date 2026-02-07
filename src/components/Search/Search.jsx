@@ -1,0 +1,22 @@
+import React from 'react'
+import './Search.css'
+
+export default function Search({ query, onChange }) {
+  return (
+    <div className="search-box">
+      <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
+      </svg>
+      <input
+        type="text"
+        className="search-input"
+        placeholder="Search"
+        value={query}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Search notes"
+        role="searchbox"
+      />
+    </div>
+  )
+}

@@ -170,22 +170,24 @@ jobs:
 
 ### Week 1：UI 优化
 - [x] Day 1: 修复按钮问题
-- [ ] Day 2: 添加动画特效
-- [ ] Day 3: 优化视觉效果
-- [ ] Day 4: 本地测试
-- [ ] Day 5: 部署上线
+- [x] Day 2: 添加动画特效
+- [x] Day 3: 优化视觉效果
+- [x] Day 4: 本地测试
+- [x] Day 5: 部署上线
 
 ### Week 2：React 重构
-- [ ] Day 1: 初始化 React + Vite 项目
-- [ ] Day 2: 迁移 Sidebar 组件
-- [ ] Day 3: 迁移 Editor 组件
-- [ ] Day 4: 集成 TipTap
+- [x] **Day 1**: 初始化 React + Vite 项目 ✅
+- [x] **Day 2**: 迁移 Sidebar 组件 ✅
+- [x] **Day 3**: 迁移 Editor 组件 ✅
+- [x] **Day 4**: 集成 TipTap ✅
 - [ ] Day 5: 测试和修复
 
 ### Week 3：功能增强
-- [ ] Day 1-2: 富文本功能
-- [ ] Day 3-4: 笔记管理
-- [ ] Day 5: 测试和优化
+- [x] **Day 1**: 深色模式切换 ✅
+- [x] **Day 2**: 键盘快捷键（Ctrl+N, Ctrl+B 等）✅
+- [x] **Day 3**: 图片上传功能 ✅
+- [x] **Day 4**: 链接功能 ✅
+- [x] **Day 5**: 笔记导出（Markdown/PDF）✅（完成）
 
 ### Week 4：测试和文档
 - [ ] Day 1-2: 单元测试

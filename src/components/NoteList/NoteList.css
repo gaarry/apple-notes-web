@@ -1,0 +1,248 @@
+.notes-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-group-header {
+  padding: 8px 12px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary, #c7c7cc);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.note-group-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.note-item-wrapper {
+  margin-bottom: 2px;
+}
+
+.note-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.note-item:hover {
+  background: var(--bg-hover, rgba(0, 122, 255, 0.08));
+}
+
+.note-item.selected {
+  background: rgba(0, 122, 255, 0.15);
+}
+
+.note-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.note-item-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.note-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary, #000);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-title.empty {
+  color: var(--text-secondary, #8e8e93);
+  font-style: italic;
+}
+
+.favorite-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.note-preview {
+  font-size: 13px;
+  color: var(--text-secondary, #8e8e93);
+  margin: 0 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.note-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.note-date {
+  font-size: 12px;
+  color: var(--text-tertiary, #c7c7cc);
+}
+
+.note-tags {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.note-tag {
+  font-size: 11px;
+  color: var(--primary, #007aff);
+  background: rgba(0, 122, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.note-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.note-item:hover .note-item-actions {
+  opacity: 1;
+}
+
+.note-action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.note-action-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.note-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Loading skeleton */
+.notes-loading {
+  padding: 8px;
+}
+
+.skeleton-note {
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-note .title {
+  height: 16px;
+  width: 60%;
+  margin-bottom: 8px;
+}
+
+.skeleton-note .content {
+  height: 14px;
+  width: 90%;
+  margin-bottom: 6px;
+}
+
+.skeleton-note .footer {
+  height: 12px;
+  width: 30%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty state */
+.notes-empty {
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--text-secondary, #8e8e93);
+}
+
+.notes-empty svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: var(--text-tertiary, #c7c7cc);
+}
+
+.notes-empty p {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary, #000);
+  margin: 0 0 8px;
+}
+
+.notes-empty span {
+  font-size: 13px;
+  color: var(--text-tertiary, #c7c7cc);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .note-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  .note-item.selected {
+    background: rgba(0, 122, 255, 0.25);
+  }
+  
+  .skeleton-line {
+    background: linear-gradient(90deg, #2c2c2e 25%, #3a3a3c 50%, #2c2c2e 75%);
+    background-size: 200% 100%;
+  }
+  
+  .note-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .note-item-actions {
+    opacity: 1;
+  }
+}
