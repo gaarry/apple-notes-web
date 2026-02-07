@@ -38,9 +38,17 @@ export default function GistSync({ notes, onNotesLoaded, onSync }) {
     if (result.success) {
       if (result.data && result.data.length > 0) {
         onNotesLoaded?.(result.data);
-        setStatus({ type: 'success', message: `Loaded ${result.data.length} notes` });
+        setStatus({ 
+          type: 'success', 
+          message: result.fallback
+            ? `Loaded ${result.data.length} notes (local cache)` 
+            : `Loaded ${result.data.length} notes` 
+        });
       } else {
-        setStatus({ type: 'success', message: 'Gist is empty' });
+        setStatus({ 
+          type: 'success', 
+          message: result.fallback ? 'Local cache is empty' : 'Gist is empty' 
+        });
       }
     } else {
       setStatus({ type: 'error', message: result.error });
@@ -62,11 +70,12 @@ export default function GistSync({ notes, onNotesLoaded, onSync }) {
     const result = await gistStorage.saveNotes(notes);
     
     if (result.success) {
-      setStatus({ type: 'success', message: `Saved ${notes.length} notes` });
-      onSync?.();
-    } else if (result.readOnly) {
-      setStatus({ type: 'error', message: 'Read-only mode. Add token to save.' });
-      setMode('write');
+      if (result.fallback) {
+        setStatus({ type: 'success', message: `Saved ${notes.length} notes (local cache)` });
+      } else {
+        setStatus({ type: 'success', message: `Saved ${notes.length} notes` });
+        onSync?.();
+      }
     } else {
       setStatus({ type: 'error', message: result.error });
     }

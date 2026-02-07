@@ -11,11 +11,13 @@
 import { parseNotesPayload, serializeNotesPayload } from '../utils';
 
 const GITHUB_API_BASE = 'https://api.github.com/gists';
+const FALLBACK_CACHE_KEY = 'gist_notes_cache';
 
 class GistStorage {
   constructor() {
     this.gistId = localStorage.getItem('gist_id');
     this.token = localStorage.getItem('gist_token'); // Optional, for writing
+    this.fallbackCache = this.getFallbackCache();
   }
 
   isConfigured() {
@@ -33,9 +35,28 @@ class GistStorage {
     }
   }
 
+  getFallbackCache() {
+    try {
+      const raw = localStorage.getItem(FALLBACK_CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      console.error('Failed to read fallback cache:', error);
+      return null;
+    }
+  }
+
+  setFallbackCache(notes) {
+    const payload = serializeNotesPayload({ notes });
+    this.fallbackCache = payload;
+    localStorage.setItem(FALLBACK_CACHE_KEY, JSON.stringify(payload));
+  }
+
   // Public: anyone can read a public gist
   async fetchNotes() {
     if (!this.gistId) {
+      if (this.fallbackCache?.notes?.length) {
+        return { success: true, data: this.fallbackCache.notes, fallback: true };
+      }
       return { success: false, error: 'Gist ID not configured' };
     }
 
@@ -69,6 +90,9 @@ class GistStorage {
       return { success: true, data: normalized.notes, meta: normalized };
     } catch (error) {
       console.error('Failed to fetch notes:', error);
+      if (this.fallbackCache?.notes?.length) {
+        return { success: true, data: this.fallbackCache.notes, fallback: true };
+      }
       return { success: false, error: error.message };
     }
   }
@@ -76,14 +100,16 @@ class GistStorage {
   // Private: need token to write
   async saveNotes(notes) {
     if (!this.gistId) {
-      return { success: false, error: 'Gist ID not configured' };
+      this.setFallbackCache(notes);
+      return { success: true, readOnly: true, fallback: true };
     }
 
     if (!this.token) {
-      return { 
-        success: false, 
-        error: 'Token required for saving. Please configure in settings.',
-        readOnly: true 
+      this.setFallbackCache(notes);
+      return {
+        success: true,
+        readOnly: true,
+        fallback: true
       };
     }
 
@@ -119,7 +145,8 @@ class GistStorage {
       return { success: true };
     } catch (error) {
       console.error('Failed to save notes:', error);
-      return { success: false, error: error.message };
+      this.setFallbackCache(notes);
+      return { success: true, readOnly: true, fallback: true };
     }
   }
 
