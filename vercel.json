@@ -1,10 +1,12 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" }
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/share/:path*", "destination": "/index.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/**/*.js": {
-      "runtime": "edge"  // Use Edge Runtime for faster cold starts
+      "runtime": "edge"
     }
   }
 }

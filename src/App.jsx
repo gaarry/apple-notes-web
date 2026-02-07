@@ -27,6 +27,19 @@ function AppContent() {
   const autoSaveTimeoutRef = useRef(null)
   const autoLoadDoneRef = useRef(false)
 
+  // Check for share page URL on mount
+  useEffect(() => {
+    const path = window.location.pathname
+    const shareMatch = path.match(/^\/share\/([^/]+)\/([^/]+)$/)
+    if (shareMatch) {
+      setIsSharePage(true)
+      setShareParams({
+        noteId: shareMatch[1],
+        token: shareMatch[2]
+      })
+    }
+  }, [])
+
   // Detect mobile viewport
   useEffect(() => {
     if (typeof window === 'undefined') return
