@@ -193,6 +193,24 @@
   color: var(--text-tertiary, #c7c7cc);
 }
 
+.share-revoke-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: transparent;
+  color: #ff3b30;
+  border: 1px solid #ff3b30;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.share-revoke-btn:hover {
+  background: #ff3b30;
+  color: white;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   .export-menu {
@@ -233,6 +251,16 @@
   
   .share-url-hint {
     color: #8e8e93;
+  }
+  
+  .share-revoke-btn {
+    color: #ff3b30;
+    border-color: #ff3b30;
+  }
+  
+  .share-revoke-btn:hover {
+    background: #ff3b30;
+    color: #fff;
   }
 }
 

@@ -184,6 +184,33 @@ export default function ExportMenu({ noteId, onClose }) {
     setShareUrl(null)
   }, [])
 
+  // Revoke share link
+  const revokeShareLink = useCallback(async () => {
+    if (!noteId || noteId === 'new') return
+    
+    if (!confirm('Are you sure you want to revoke this share link? Anyone with the link will no longer be able to view this note.')) {
+      return
+    }
+    
+    try {
+      const res = await fetch(`/api/share?noteId=${noteId}`, {
+        method: 'DELETE'
+      })
+      
+      const data = await res.json()
+      if (data.success) {
+        setShareUrl(null)
+        alert('Share link revoked successfully!')
+      } else {
+        console.error('Failed to revoke share:', data.error)
+        alert('Failed to revoke share link')
+      }
+    } catch (error) {
+      console.error('Revoke error:', error)
+      alert('Failed to revoke share link')
+    }
+  }, [noteId])
+
   return (
     <div className="export-menu" ref={menuRef} role="dialog" aria-modal="true" aria-labelledby="export-title">
       <div className="export-menu-header">
@@ -295,6 +322,12 @@ export default function ExportMenu({ noteId, onClose }) {
               </button>
             </div>
             <p className="share-url-hint">Anyone with this link can view this note</p>
+            <button 
+              className="share-revoke-btn"
+              onClick={revokeShareLink}
+            >
+              🔒 Revoke Link
+            </button>
           </div>
         ) : (
           <button 
