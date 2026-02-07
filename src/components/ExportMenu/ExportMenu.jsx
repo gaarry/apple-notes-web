@@ -6,6 +6,9 @@ import './ExportMenu.css'
 export default function ExportMenu({ noteId, onClose }) {
   const { getNote } = useNotes()
   const [exporting, setExporting] = useState(false)
+  const [sharing, setSharing] = useState(false)
+  const [shareUrl, setShareUrl] = useState(null)
+  const [copied, setCopied] = useState(false)
   const menuRef = useRef(null)
 
   const note = noteId === 'new' ? null : getNote(noteId)
@@ -136,6 +139,51 @@ export default function ExportMenu({ noteId, onClose }) {
     }
   }, [note, onClose])
 
+  // Generate share link
+  const createShareLink = useCallback(async () => {
+    if (!note || !noteId || noteId === 'new') return
+    
+    setSharing(true)
+    setShareUrl(null)
+    
+    try {
+      const res = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          noteId: noteId,
+          noteTitle: note.title || 'Untitled Note'
+        })
+      })
+      
+      const data = await res.json()
+      if (data.success && data.data) {
+        const shareUrl = `${window.location.origin}/share/${data.data.noteId}/${data.data.token}`
+        setShareUrl(shareUrl)
+      } else {
+        console.error('Failed to create share link:', data.error)
+      }
+    } catch (error) {
+      console.error('Share error:', error)
+    } finally {
+      setSharing(false)
+    }
+  }, [note, noteId])
+
+  // Copy share link to clipboard
+  const copyShareLink = useCallback(() => {
+    if (!shareUrl) return
+    
+    navigator.clipboard.writeText(shareUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [shareUrl])
+
+  // Close share URL display
+  const closeShareUrl = useCallback(() => {
+    setShareUrl(null)
+  }, [])
+
   return (
     <div className="export-menu" ref={menuRef} role="dialog" aria-modal="true" aria-labelledby="export-title">
       <div className="export-menu-header">
@@ -221,6 +269,54 @@ export default function ExportMenu({ noteId, onClose }) {
             <span className="export-desc">Paste anywhere</span>
           </div>
         </button>
+
+        {/* Share Button */}
+        {shareUrl ? (
+          <div className="share-url-container">
+            <div className="share-url-box">
+              <input 
+                type="text" 
+                className="share-url-input"
+                value={shareUrl}
+                readOnly
+                onClick={(e) => e.target.select()}
+              />
+              <button 
+                className="share-url-copy-btn"
+                onClick={copyShareLink}
+              >
+                {copied ? '✓' : 'Copy'}
+              </button>
+              <button 
+                className="share-url-close-btn"
+                onClick={closeShareUrl}
+              >
+                ×
+              </button>
+            </div>
+            <p className="share-url-hint">Anyone with this link can view this note</p>
+          </div>
+        ) : (
+          <button 
+            className="export-option share-option"
+            onClick={createShareLink}
+            disabled={sharing || !noteId || noteId === 'new'}
+          >
+            <div className="export-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+            </div>
+            <div className="export-info">
+              <span className="export-title">Share Link</span>
+              <span className="export-desc">{sharing ? 'Generating...' : 'Create read-only link'}</span>
+            </div>
+          </button>
+        )}
       </div>
     </div>
   )

@@ -5,11 +5,14 @@ import Editor from './components/Editor/Editor'
 import ExportMenu from './components/ExportMenu/ExportMenu'
 import Layout from './components/Layout/Layout'
 import GistSync from './components/GistSync/GistSync'
+import SharePage from './pages/SharePage'
 import { useKeyboardShortcuts } from './hooks/useKeyboard'
 import { gistStorage } from './lib/gistStorage'
 
 function AppContent() {
-  const { notes, importNotes, loading } = useNotes()
+  // Check if we're on a share page
+  const [isSharePage, setIsSharePage] = useState(false)
+  const [shareParams, setShareParams] = useState(null)
   const [selectedNoteId, setSelectedNoteId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteMode, setDeleteMode] = useState(false)
@@ -250,6 +253,11 @@ function AppContent() {
           onNotesLoaded={importNotes}
         />
       </div>
+
+      {/* Share Page - overrides everything else */}
+      {isSharePage && shareParams && (
+        <SharePage noteId={shareParams.noteId} shareToken={shareParams.token} />
+      )}
     </Layout>
   )
 }
