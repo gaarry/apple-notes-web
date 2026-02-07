@@ -7,7 +7,7 @@ import Link from '@tiptap/extension-link'
 import { useNotes } from '../../context/NotesContext'
 import { formatLongDate, countWords } from '../../utils'
 import Toolbar from '../Toolbar/Toolbar'
-import GitHubSync from '../GitHubSync/GitHubSync'
+import GistSync from '../GistSync/GistSync'
 import './Editor.css'
 
 export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isMobile, onNoteCreated }) {
@@ -258,7 +258,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
               </svg>
             </button>
             
-            <GitHubSync notes={notes} />
+            <GistSync notes={notes} />
             
             {deleteMode && (
               <button 
