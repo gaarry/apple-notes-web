@@ -5,7 +5,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { useNotes } from '../../context/NotesContext'
-import { formatLongDate, countWords, generateId } from '../../utils'
+import { formatLongDate, countWords, generateId, stripHtml } from '../../utils'
 import Toolbar from '../Toolbar/Toolbar'
 import './Editor.css'
 
@@ -16,6 +16,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
   const [localContent, setLocalContent] = useState('') // Local state for new note content
   const [saveStatus, setSaveStatus] = useState('saved') // 'saved', 'saving', 'unsaved'
   const [wordCount, setWordCount] = useState(0)
+  const [shareStatus, setShareStatus] = useState(null)
   const saveTimeoutRef = useRef(null)
 
   // Use createdNoteId for new notes after creation
@@ -190,6 +191,42 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
     }
   }, [editor])
 
+  const handleShareNote = useCallback(async () => {
+    const targetId = effectiveNote?.id || (noteId !== 'new' ? noteId : null)
+    if (!targetId) {
+      setShareStatus({ type: 'error', message: 'Please save the note first' })
+      return
+    }
+
+    const noteToShare = effectiveNote
+    const title = noteToShare?.title || 'Untitled Note'
+    const contentHtml = noteToShare?.content || ''
+    const text = stripHtml(contentHtml).trim()
+    const shareUrl = `${window.location.origin}${window.location.pathname}#note=${targetId}`
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title,
+          text,
+          url: shareUrl
+        })
+        setShareStatus({ type: 'success', message: 'Shared' })
+        return
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(`${title}\n\n${text}\n\n${shareUrl}`)
+        setShareStatus({ type: 'success', message: 'Link copied' })
+        return
+      }
+
+      setShareStatus({ type: 'error', message: 'Share not supported' })
+    } catch (error) {
+      setShareStatus({ type: 'error', message: 'Share failed' })
+    }
+  }, [noteId, effectiveNote])
+
   const buildUpdatedNotes = useCallback((nextNote) => {
     const index = notes.findIndex(item => item.id === nextNote.id)
     if (index === -1) {
@@ -287,6 +324,11 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
                 {cloudSaveStatus.message}
               </span>
             )}
+            {shareStatus?.message && (
+              <span className={`share-status ${shareStatus.type || ''}`}>
+                {shareStatus.message}
+              </span>
+            )}
             <span className="note-date">
               {formattedDate}
             </span>
@@ -295,6 +337,20 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
             </span>
           </div>
           <div className="editor-actions">
+            <button
+              className="action-btn"
+              onClick={handleShareNote}
+              title="Share note"
+              aria-label="Share note"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.5" y1="10.5" x2="15.5" y2="6.5" />
+                <line x1="8.5" y1="13.5" x2="15.5" y2="17.5" />
+              </svg>
+            </button>
             <button
               className="action-btn save-btn"
               onClick={handleCloudSaveClick}

@@ -113,6 +113,27 @@
   color: var(--primary, #007aff);
 }
 
+.share-status {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-1, #fff);
+  color: var(--text-secondary, #8e8e93);
+  box-shadow: inset 0 0 0 1px var(--border-subtle, rgba(0, 0, 0, 0.06));
+}
+
+.share-status.success {
+  color: var(--success, #34c759);
+}
+
+.share-status.error {
+  color: var(--danger, #ff3b30);
+}
+
+.share-status.info {
+  color: var(--primary, #007aff);
+}
+
 .note-date {
   font-size: 13px;
   color: var(--text-secondary, #8e8e93);
