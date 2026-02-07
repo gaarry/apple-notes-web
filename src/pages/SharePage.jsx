@@ -232,7 +232,19 @@ export default function SharePage({ noteId, shareToken }) {
         }
 
         // Get gistId from localStorage (set when user configured cloud sync)
-        const gistId = localStorage.getItem('gist_id') || 'aabff1940df8f8666f76584089a682fd'
+        const gistId = localStorage.getItem('gist_id')
+        
+        if (!gistId) {
+          // No gist configured - show title only, content not available
+          setNote({
+            id: validateData.noteId,
+            title: validateData.noteTitle,
+            content: '<p>📝 Note content is not available.</p><p><strong>To share notes with full content, please:</strong></p><ol><li>Open Apple Notes Web</li><li>Configure Cloud Sync with a GitHub Gist</li><li>Create the share link again</li></ol>',
+            updatedAt: null
+          })
+          setLoading(false)
+          return
+        }
         
         // Fetch notes from gist
         const gistRes = await fetch(`/api/gist?gistId=${gistId}`)
