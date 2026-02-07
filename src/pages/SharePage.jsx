@@ -221,7 +221,7 @@ export default function SharePage({ noteId, shareToken }) {
       }
 
       try {
-        // Validate token
+        // Validate token first
         const validateRes = await fetch(`/api/share?token=${shareToken}`)
         const validateData = await validateRes.json()
 
@@ -231,18 +231,44 @@ export default function SharePage({ noteId, shareToken }) {
           return
         }
 
-        // Fetch note data from gist
-        const gistId = validateData.noteId.replace(/-.*$/, '') // Use note ID as gist lookup
-        const gistRes = await fetch(`/api/gist?debug=1`)
+        // Get gistId from localStorage (set when user configured cloud sync)
+        const gistId = localStorage.getItem('gist_id') || 'aabff1940df8f8666f76584089a682fd'
+        
+        // Fetch notes from gist
+        const gistRes = await fetch(`/api/gist?gistId=${gistId}`)
         const gistData = await gistRes.json()
 
-        // For now, show the note title from the token
-        setNote({
-          id: noteId,
-          title: validateData.noteTitle,
-          content: '<p>Note content would be displayed here after full implementation.</p><p>For full sharing functionality, implement note data storage in the gist.</p>'
-        })
+        if (gistData.success && gistData.data) {
+          // Find the specific note by ID
+          const sharedNote = gistData.data.find(n => n.id === validateData.noteId)
+          
+          if (sharedNote) {
+            setNote({
+              id: sharedNote.id,
+              title: sharedNote.title || validateData.noteTitle,
+              content: sharedNote.content || '<p>No content</p>',
+              updatedAt: sharedNote.updatedAt
+            })
+          } else {
+            // Note not found in gist, show title from token
+            setNote({
+              id: validateData.noteId,
+              title: validateData.noteTitle,
+              content: '<p>This note may have been deleted from the original source.</p>',
+              updatedAt: null
+            })
+          }
+        } else {
+          // Couldn't fetch notes, show title from token
+          setNote({
+            id: validateData.noteId,
+            title: validateData.noteTitle,
+            content: '<p>Unable to load note content. Please check the original source.</p>',
+            updatedAt: null
+          })
+        }
       } catch (err) {
+        console.error('Failed to load shared note:', err)
         setError('Failed to load shared note')
       } finally {
         setLoading(false)

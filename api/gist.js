@@ -101,10 +101,15 @@ async function fetchGistMeta(gistId, token) {
 }
 
 export default async function handler(req, res) {
-  const gistId = process.env.GIST_ID
-  const token = process.env.GITHUB_TOKEN
   const url = new URL(req.url, `http://${req.headers.host}`)
   const debug = url.searchParams.get('debug') === '1'
+  
+  // Support gistId from query parameter (for share feature) or environment
+  const queryGistId = url.searchParams.get('gistId')
+  // Default gistId for sharing (notes storage gist)
+  const defaultGistId = 'aabff1940df8f8666f76584089a682fd'
+  const gistId = queryGistId || process.env.GIST_ID || defaultGistId
+  const token = process.env.GITHUB_TOKEN
 
   if (!gistId) {
     res.status(500).json({ success: false, error: 'GIST_ID not configured' })
