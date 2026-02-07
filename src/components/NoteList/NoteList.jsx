@@ -85,7 +85,8 @@ export default function NoteList({
   onSelectNote,
   onFavorite,
   showActions = false,
-  emptyMessage = 'No notes yet'
+  emptyMessage = 'No notes yet',
+  density = 'cozy'
 }) {
   // Optimized grouping with useMemo
   const groupedNotes = useMemo(() => {
@@ -167,7 +168,7 @@ export default function NoteList({
   }
 
   return (
-    <nav className="notes-nav">
+    <nav className={`notes-nav density-${density}`}>
       <div className="notes-container">
         {renderGroup('Today', groupedNotes.today)}
         {renderGroup('Yesterday', groupedNotes.yesterday)}

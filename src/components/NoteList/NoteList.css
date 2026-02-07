@@ -11,6 +11,10 @@
   gap: 8px;
 }
 
+.notes-nav.density-compact .notes-container {
+  gap: 6px;
+}
+
 .note-group-header {
   padding: 10px 12px 6px;
   font-size: 11px;
@@ -54,6 +58,34 @@
   position: relative;
 }
 
+.notes-nav.density-compact .note-item {
+  padding: 9px 10px;
+  border-radius: 10px;
+}
+
+.notes-nav.density-compact .note-item::before {
+  top: 10px;
+  bottom: 10px;
+}
+
+.notes-nav.density-compact .note-title {
+  font-size: 14px;
+}
+
+.notes-nav.density-compact .note-preview {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.notes-nav.density-compact .note-date {
+  font-size: 11px;
+}
+
+.notes-nav.density-compact .note-action-btn {
+  width: 26px;
+  height: 26px;
+}
+
 .note-item::before {
   content: '';
   position: absolute;
@@ -69,6 +101,11 @@
   border-color: rgba(0, 0, 0, 0.12);
   box-shadow: var(--shadow-soft, 0 2px 8px rgba(0, 0, 0, 0.08));
   transform: translateY(-1px);
+}
+
+.note-item:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .note-item.selected {

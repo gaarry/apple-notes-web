@@ -125,6 +125,16 @@ function AppContent() {
     document.documentElement.classList.toggle('dark', darkMode)
   }, [darkMode])
 
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (!isMobile) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : previousOverflow || ''
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isMobile, mobileMenuOpen])
+
   return (
     <Layout darkMode={darkMode} isMobile={isMobile}>
       {/* Mobile Menu Button */}
@@ -166,6 +176,7 @@ function AppContent() {
         onToggleDarkMode={handleToggleDarkMode}
         mobileOpen={mobileMenuOpen}
         onCloseMobileMenu={() => setMobileMenuOpen(false)}
+        isMobile={isMobile}
       />
       <Editor
         noteId={selectedNoteId}

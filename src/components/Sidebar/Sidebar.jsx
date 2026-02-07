@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useDeferredValue } from 'react'
+import React, { useState, useCallback, useMemo, useDeferredValue, useEffect, useRef } from 'react'
 import { useNotes } from '../../context/NotesContext'
 import Search from '../Search/Search'
 import NoteList from '../NoteList/NoteList'
@@ -16,9 +16,14 @@ export default function Sidebar({
   darkMode,
   onToggleDarkMode,
   mobileOpen,
-  onCloseMobileMenu
+  onCloseMobileMenu,
+  isMobile
 }) {
   const { activeFolder, setActiveFolder, getFilteredNotes, toggleFavorite } = useNotes()
+  const sidebarRef = useRef(null)
+  const resizeWidthRef = useRef(280)
+  const [sidebarWidth, setSidebarWidth] = useState(280)
+  const [noteDensity, setNoteDensity] = useState('cozy')
 
   const handleSelectFolder = useCallback((folderId) => {
     setActiveFolder(folderId)
@@ -44,9 +49,54 @@ export default function Sidebar({
     ))
   }, [getFilteredNotes, deferredQuery])
 
+  useEffect(() => {
+    const storedWidth = Number(localStorage.getItem('sidebar_width'))
+    if (!Number.isNaN(storedWidth) && storedWidth >= 240 && storedWidth <= 360) {
+      setSidebarWidth(storedWidth)
+    }
+    const storedDensity = localStorage.getItem('note_density')
+    if (storedDensity === 'compact' || storedDensity === 'cozy') {
+      setNoteDensity(storedDensity)
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('note_density', noteDensity)
+  }, [noteDensity])
+
+  const handleResizeStart = useCallback((event) => {
+    if (isMobile || !sidebarRef.current) return
+    event.preventDefault()
+    const startX = event.clientX
+    const startWidth = sidebarRef.current.getBoundingClientRect().width
+    resizeWidthRef.current = startWidth
+
+    const handleMove = (moveEvent) => {
+      const deltaX = moveEvent.clientX - startX
+      const nextWidth = Math.min(360, Math.max(240, startWidth + deltaX))
+      setSidebarWidth(nextWidth)
+      resizeWidthRef.current = nextWidth
+    }
+
+    const handleUp = () => {
+      localStorage.setItem('sidebar_width', String(resizeWidthRef.current))
+      window.removeEventListener('pointermove', handleMove)
+      window.removeEventListener('pointerup', handleUp)
+    }
+
+    window.addEventListener('pointermove', handleMove)
+    window.addEventListener('pointerup', handleUp)
+  }, [isMobile])
+
+  const handleToggleDensity = useCallback(() => {
+    setNoteDensity(prev => (prev === 'compact' ? 'cozy' : 'compact'))
+  }, [])
+
   return (
     <aside 
       className={`sidebar ${mobileOpen ? 'mobile-open' : ''}`} 
+      style={!isMobile ? { width: sidebarWidth, minWidth: sidebarWidth } : undefined}
+      ref={sidebarRef}
       role="complementary" 
       aria-label="Notes sidebar"
     >
@@ -79,9 +129,22 @@ export default function Sidebar({
         onSelectNote={handleNoteClick}
         onFavorite={toggleFavorite}
         showActions={true}
+        density={noteDensity}
       />
 
       <div className="sidebar-footer">
+        <button
+          className="density-toggle-btn"
+          onClick={handleToggleDensity}
+          title={noteDensity === 'compact' ? 'Switch to comfortable list density' : 'Switch to compact list density'}
+          aria-label="Toggle list density"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
         <button
           className={`theme-toggle-btn ${darkMode ? 'active' : ''}`}
           onClick={onToggleDarkMode}
@@ -107,6 +170,15 @@ export default function Sidebar({
           </svg>
         </button>
       </div>
+      {!isMobile && (
+        <div
+          className="sidebar-resizer"
+          onPointerDown={handleResizeStart}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize sidebar"
+        />
+      )}
     </aside>
   )
 }
