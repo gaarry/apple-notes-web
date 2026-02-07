@@ -1,12 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { NotesProvider } from './context/NotesContext.jsx'
+import { NotesProvider, useNotes } from './context/NotesContext.jsx'
 import Sidebar from './components/Sidebar/Sidebar'
 import Editor from './components/Editor/Editor'
 import ExportMenu from './components/ExportMenu/ExportMenu'
 import Layout from './components/Layout/Layout'
+import GistSync from './components/GistSync/GistSync'
 import { useKeyboardShortcuts } from './hooks/useKeyboard'
 
 function AppContent() {
+  const { notes, importNotes } = useNotes()
   const [selectedNoteId, setSelectedNoteId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteMode, setDeleteMode] = useState(false)
@@ -161,6 +163,14 @@ function AppContent() {
           onClose={handleCloseExportMenu} 
         />
       )}
+      
+      {/* Gist Sync - available globally */}
+      <div className="gist-sync-container">
+        <GistSync 
+          notes={notes} 
+          onNotesLoaded={importNotes}
+        />
+      </div>
     </Layout>
   )
 }

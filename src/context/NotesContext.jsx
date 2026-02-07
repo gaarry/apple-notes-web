@@ -71,6 +71,20 @@ export function NotesProvider({ children }) {
     return notes.find(note => note.id === id)
   }, [notes])
 
+  // Import notes (for cloud sync)
+  const importNotes = useCallback((importedNotes, merge = true) => {
+    if (merge) {
+      // Merge with existing notes, newer updates win
+      const existingIds = new Set(notes.map(n => n.id))
+      const newNotes = importedNotes.filter(n => !existingIds.has(n.id))
+      const mergedNotes = [...newNotes, ...notes]
+      setNotes(mergedNotes)
+    } else {
+      // Replace all notes
+      setNotes(importedNotes)
+    }
+  }, [notes])
+
   const searchNotes = useCallback((query) => {
     if (!query.trim()) return getFilteredNotes()
     const lowerQuery = query.toLowerCase()
@@ -168,7 +182,8 @@ export function NotesProvider({ children }) {
     deleteFolder,
     addTag,
     removeTag,
-    moveNoteToFolder
+    moveNoteToFolder,
+    importNotes
   }
 
   return (
