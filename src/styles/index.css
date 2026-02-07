@@ -15,12 +15,17 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body {
+  background: var(--surface-2, #f5f5f7);
+}
+
 /* Root variables */
 :root {
   /* Primary */
   --primary: #007aff;
   --primary-hover: #0056b3;
   --primary-light: rgba(0, 122, 255, 0.1);
+  --accent-warm: #ffcc00;
 
   /* Background */
   --bg-sidebar: #f2f2f7;
@@ -28,7 +33,9 @@ body {
   --bg-hover: rgba(0, 122, 255, 0.08);
   --surface-1: #ffffff;
   --surface-2: #f5f5f7;
+  --surface-3: #ededf1;
   --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.08);
 
   /* Text */
   --text-primary: #000000;
@@ -37,6 +44,14 @@ body {
 
   /* Border */
   --border-color: #e5e5e5;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --separator: rgba(60, 60, 67, 0.12);
+
+  /* Radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 
   /* Status */
   --success: #34c759;
@@ -55,6 +70,7 @@ html.dark {
   --primary: #0a84ff;
   --primary-hover: #409cff;
   --primary-light: rgba(10, 132, 255, 0.2);
+  --accent-warm: #ffd60a;
 
   /* Background */
   --bg-sidebar: #1c1c1e;
@@ -62,7 +78,9 @@ html.dark {
   --bg-hover: rgba(255, 255, 255, 0.1);
   --surface-1: #111113;
   --surface-2: #1c1c1e;
+  --surface-3: #2c2c2e;
   --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 10px 24px rgba(0, 0, 0, 0.45);
 
   /* Text */
   --text-primary: #ffffff;
@@ -71,6 +89,8 @@ html.dark {
 
   /* Border */
   --border-color: #38383a;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --separator: rgba(84, 84, 88, 0.6);
 }
 
 /* Dark mode */
@@ -81,11 +101,16 @@ html.dark {
     --bg-hover: rgba(255, 255, 255, 0.1);
     --surface-1: #111113;
     --surface-2: #1c1c1e;
+    --surface-3: #2c2c2e;
     --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 10px 24px rgba(0, 0, 0, 0.45);
     --text-primary: #ffffff;
     --text-secondary: #8e8e93;
     --text-tertiary: #636366;
     --border-color: #38383a;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --separator: rgba(84, 84, 88, 0.6);
+    --accent-warm: #ffd60a;
   }
 }
 

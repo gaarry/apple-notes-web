@@ -19,7 +19,7 @@ const NoteItem = React.memo(function NoteItem({
   return (
     <li className={`note-item-wrapper ${isSelected ? 'selected' : ''}`}>
       <div
-        className={`note-item ${isSelected ? 'selected' : ''}`}
+        className={`note-item ${isSelected ? 'selected' : ''} ${note.isFavorite ? 'favorite' : ''}`}
         onClick={() => onClick(note.id)}
         role="button"
         tabIndex={0}
