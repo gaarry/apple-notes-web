@@ -65,9 +65,46 @@ async function saveGist(gistId, token, notes) {
   return { ok: true }
 }
 
+async function fetchTokenUser(token) {
+  if (!token) return { ok: false, error: 'Missing token' }
+  const res = await fetch('https://api.github.com/user', {
+    headers: {
+      Accept: 'application/vnd.github.v3+json',
+      Authorization: `token ${token}`
+    }
+  })
+  if (!res.ok) {
+    return { ok: false, status: res.status }
+  }
+  const data = await res.json()
+  return { ok: true, login: data?.login || null }
+}
+
+async function fetchGistMeta(gistId, token) {
+  const url = `${GITHUB_API_BASE}/${gistId}`
+  const headers = {
+    Accept: 'application/vnd.github.v3+json',
+    ...(token ? { Authorization: `token ${token}` } : {})
+  }
+  const res = await fetch(url, { headers })
+  if (!res.ok) {
+    return { ok: false, status: res.status }
+  }
+  const data = await res.json()
+  return {
+    ok: true,
+    id: data?.id,
+    owner: data?.owner?.login || null,
+    updatedAt: data?.updated_at || null,
+    files: data?.files ? Object.keys(data.files) : []
+  }
+}
+
 export default async function handler(req, res) {
   const gistId = process.env.GIST_ID
   const token = process.env.GITHUB_TOKEN
+  const url = new URL(req.url, `http://${req.headers.host}`)
+  const debug = url.searchParams.get('debug') === '1'
 
   if (!gistId) {
     res.status(500).json({ success: false, error: 'GIST_ID not configured' })
@@ -75,6 +112,23 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
+    if (debug) {
+      const [tokenUser, gistMeta] = await Promise.all([
+        fetchTokenUser(token),
+        fetchGistMeta(gistId, token)
+      ])
+      res.status(200).json({
+        success: true,
+        gistId,
+        tokenUser: tokenUser.ok ? tokenUser.login : null,
+        gistOwner: gistMeta.ok ? gistMeta.owner : null,
+        gistUpdatedAt: gistMeta.ok ? gistMeta.updatedAt : null,
+        gistFiles: gistMeta.ok ? gistMeta.files : [],
+        tokenUserError: tokenUser.ok ? null : tokenUser.status || tokenUser.error,
+        gistMetaError: gistMeta.ok ? null : gistMeta.status
+      })
+      return
+    }
     const result = await fetchGist(gistId, token)
     if (!result.ok) {
       res.status(result.status || 500).json({ 
