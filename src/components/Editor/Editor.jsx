@@ -8,7 +8,7 @@ import { useNotes } from '../../context/NotesContext'
 import Toolbar from '../Toolbar/Toolbar'
 import './Editor.css'
 
-export default function Editor({ noteId, onDeleteNote, deleteMode, onExport }) {
+export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isMobile }) {
   const { notes, createNote, updateNote, getNote, deleteNote, loading } = useNotes()
   const [isNewNote, setIsNewNote] = useState(false)
   const [saveStatus, setSaveStatus] = useState('saved') // 'saved', 'saving', 'unsaved'

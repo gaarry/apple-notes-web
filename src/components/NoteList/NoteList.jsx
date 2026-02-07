@@ -41,10 +41,12 @@ const NoteItem = React.memo(function NoteItem({
 
   return (
     <li className={`note-item-wrapper ${isSelected ? 'selected' : ''}`}>
-      <button
+      <div
         className={`note-item ${isSelected ? 'selected' : ''}`}
         onClick={() => onClick(note.id)}
-        aria-current={isSelected ? 'true' : undefined}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && onClick(note.id)}
       >
         <div className="note-item-content">
           <div className="note-item-header">
@@ -94,7 +96,7 @@ const NoteItem = React.memo(function NoteItem({
             </button>
           </div>
         )}
-      </button>
+      </div>
     </li>
   )
 })

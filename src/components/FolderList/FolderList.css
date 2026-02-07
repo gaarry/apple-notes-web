@@ -238,9 +238,47 @@
   }
 }
 
-/* Responsive */
+/* Responsive - Tablet (768px) */
 @media (max-width: 768px) {
   .folder-menu-btn {
     opacity: 1;
+  }
+  
+  .folder-item {
+    padding: 12px 14px;
+  }
+  
+  .folder-name {
+    font-size: 16px;
+  }
+}
+
+/* Responsive - Mobile (480px) */
+@media (max-width: 480px) {
+  .folder-list {
+    padding: 8px;
+  }
+  
+  .folder-item {
+    padding: 14px 12px;
+    border-radius: 10px;
+  }
+  
+  .folder-icon {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .folder-name {
+    font-size: 15px;
+  }
+  
+  .folder-item:active {
+    background: rgba(0, 122, 255, 0.1);
+  }
+  
+  .new-note-folder-btn {
+    padding: 14px;
+    font-size: 16px;
   }
 }

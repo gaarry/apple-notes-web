@@ -12,15 +12,34 @@ function AppContent() {
   const [deleteMode, setDeleteMode] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const handleSelectNote = useCallback((id) => {
     setSelectedNoteId(id)
     setDeleteMode(false)
-  }, [])
+    // Close mobile menu when selecting a note
+    if (isMobile) {
+      setMobileMenuOpen(false)
+    }
+  }, [isMobile])
 
   const handleCreateNote = useCallback(() => {
     setSelectedNoteId('new')
-  }, [])
+    if (isMobile) {
+      setMobileMenuOpen(false)
+    }
+  }, [isMobile])
 
   const handleDeleteNote = useCallback((id) => {
     setSelectedNoteId(null)
@@ -51,6 +70,10 @@ function AppContent() {
     setShowExportMenu(false)
   }, [])
 
+  const handleToggleMobileMenu = useCallback(() => {
+    setMobileMenuOpen(prev => !prev)
+  }, [])
+
   // Keyboard shortcuts
   const shortcuts = {
     'ctrl+n': handleCreateNote,
@@ -65,6 +88,7 @@ function AppContent() {
       setSelectedNoteId(null)
       setDeleteMode(false)
       setShowExportMenu(false)
+      setMobileMenuOpen(false)
     }
   }
 
@@ -76,7 +100,34 @@ function AppContent() {
   }, [darkMode])
 
   return (
-    <Layout darkMode={darkMode}>
+    <Layout darkMode={darkMode} isMobile={isMobile}>
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <button
+          className="mobile-menu-btn"
+          onClick={handleToggleMobileMenu}
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {mobileMenuOpen ? (
+              <path d="M18 6L6 18M6 6l12 12" />
+            ) : (
+              <>
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </>
+            )}
+          </svg>
+        </button>
+      )}
+
+      {/* Mobile Overlay */}
+      {isMobile && mobileMenuOpen && (
+        <div className="mobile-overlay" onClick={handleToggleMobileMenu} />
+      )}
+
+      {/* Sidebar with mobile state */}
       <Sidebar
         searchQuery={searchQuery}
         onSearch={handleSearch}
@@ -87,12 +138,15 @@ function AppContent() {
         onToggleDeleteMode={handleToggleDeleteMode}
         darkMode={darkMode}
         onToggleDarkMode={handleToggleDarkMode}
+        mobileOpen={mobileMenuOpen}
+        onCloseMobileMenu={() => setMobileMenuOpen(false)}
       />
       <Editor
         noteId={selectedNoteId}
         onDeleteNote={handleDeleteNote}
         deleteMode={deleteMode}
         onExport={handleExport}
+        isMobile={isMobile}
       />
       
       {showExportMenu && (

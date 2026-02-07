@@ -37,7 +37,7 @@ export default function FolderList({
         return (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-            <path d="M5.45 5.11L2a2 2 0 0 0 2 2h16 12v6a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+            <path d="M5.45 5.11L2a2 2 0 0 0 2 2h16v12a2 2 0 0 0 2 2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
           </svg>
         )
       default:
@@ -86,9 +86,12 @@ export default function FolderList({
         <ul className="folder-items">
           {folders.map(folder => (
             <li key={folder.id}>
-              <button
+              <div
                 className={`folder-item ${activeFolder === folder.id ? 'active' : ''}`}
                 onClick={() => onSelectFolder(folder.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && onSelectFolder(folder.id)}
               >
                 <span className="folder-icon">
                   {getFolderIcon(folder.icon)}
@@ -109,7 +112,7 @@ export default function FolderList({
                     </svg>
                   </button>
                 )}
-              </button>
+              </div>
               {showMenu === folder.id && (
                 <div className="folder-menu">
                   <button onClick={() => handleDeleteFolder(folder.id)}>

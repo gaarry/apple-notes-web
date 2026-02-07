@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useNotes } from '../../context/NotesContext'
 import Search from '../Search/Search'
 import NoteList from '../NoteList/NoteList'
@@ -14,7 +14,9 @@ export default function Sidebar({
   deleteMode,
   onToggleDeleteMode,
   darkMode,
-  onToggleDarkMode
+  onToggleDarkMode,
+  mobileOpen,
+  onCloseMobileMenu
 }) {
   const { activeFolder, setActiveFolder, getFilteredNotes, toggleFavorite } = useNotes()
 
@@ -40,7 +42,11 @@ export default function Sidebar({
   })
 
   return (
-    <aside className="sidebar" role="complementary" aria-label="Notes sidebar">
+    <aside 
+      className={`sidebar ${mobileOpen ? 'mobile-open' : ''}`} 
+      role="complementary" 
+      aria-label="Notes sidebar"
+    >
       <div className="sidebar-header">
         <Search
           query={searchQuery}

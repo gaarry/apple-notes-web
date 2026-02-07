@@ -16,9 +16,17 @@
   --border-color: #38383a;
 }
 
-/* Responsive */
+/* Responsive - Tablet (768px) */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
+    padding-top: 68px;
+  }
+}
+
+/* Mobile View */
+@media (max-width: 480px) {
+  .app-container.mobile-view {
+    padding-top: 68px;
   }
 }

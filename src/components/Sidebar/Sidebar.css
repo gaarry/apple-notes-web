@@ -123,9 +123,30 @@
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 85%;
+    max-width: 320px;
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-header {
+    padding-top: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
     width: 100%;
-    min-width: 100%;
-    height: auto;
-    max-height: 40vh;
+    max-width: 100%;
   }
 }

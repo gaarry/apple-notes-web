@@ -240,9 +240,66 @@
   }
 }
 
-/* Responsive */
+/* Responsive - Tablet (768px) */
 @media (max-width: 768px) {
   .note-item-actions {
     opacity: 1;
+  }
+  
+  .note-item {
+    padding: 14px;
+  }
+  
+  .note-title {
+    font-size: 16px;
+  }
+  
+  .note-preview {
+    font-size: 14px;
+  }
+}
+
+/* Responsive - Mobile (480px) */
+@media (max-width: 480px) {
+  .note-item {
+    padding: 12px;
+    border-radius: 12px;
+  }
+  
+  .note-item-header {
+    margin-bottom: 6px;
+  }
+  
+  .note-title {
+    font-size: 15px;
+  }
+  
+  .note-preview {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  
+  .note-item-footer {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .note-date {
+    font-size: 11px;
+  }
+  
+  .note-tag {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+  
+  .note-action-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .note-action-btn svg {
+    width: 18px;
+    height: 18px;
   }
 }

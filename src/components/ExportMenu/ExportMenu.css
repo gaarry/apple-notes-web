@@ -143,5 +143,43 @@
 @media (max-width: 480px) {
   .export-menu {
     width: 95%;
+    max-width: none;
+    border-radius: 16px;
+  }
+  
+  .export-menu-header {
+    padding: 14px 16px;
+  }
+  
+  .export-menu-header h3 {
+    font-size: 17px;
+  }
+  
+  .close-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .export-option {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+  
+  .export-icon {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .export-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .export-title {
+    font-size: 16px;
+  }
+  
+  .export-desc {
+    font-size: 12px;
   }
 }

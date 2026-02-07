@@ -59,3 +59,53 @@
   background: rgba(0, 122, 255, 0.15);
   color: var(--primary, #007aff);
 }
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .toolbar {
+    overflow-x: auto;
+    gap: 2px;
+    padding: 6px 0;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .toolbar-group {
+    flex-shrink: 0;
+  }
+  
+  .toolbar-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+  
+  .toolbar-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .toolbar-divider {
+    margin: 0 4px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    padding: 8px 0;
+    gap: 4px;
+  }
+  
+  .toolbar-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 8px;
+  }
+  
+  .toolbar-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}

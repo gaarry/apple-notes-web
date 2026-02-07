@@ -34,3 +34,23 @@
   background: rgba(0, 0, 0, 0.08);
   box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
 }
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .search-input {
+    padding: 12px 14px 12px 42px;
+    font-size: 16px;
+  }
+  
+  .search-icon {
+    left: 14px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-box {
+    width: 100%;
+  }
+}
