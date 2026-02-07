@@ -5,12 +5,12 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { useNotes } from '../../context/NotesContext'
-import { formatLongDate, countWords } from '../../utils'
+import { formatLongDate, countWords, generateId } from '../../utils'
 import Toolbar from '../Toolbar/Toolbar'
 import './Editor.css'
 
 export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isMobile, onNoteCreated, onSaveToCloud, cloudSaveStatus }) {
-  const { notes, createNote, updateNote, getNote, deleteNote, loading } = useNotes()
+  const { notes, createNote, updateNote, getNote, deleteNote, loading, activeFolder } = useNotes()
   const [createdNoteId, setCreatedNoteId] = useState(null)
   const [localTitle, setLocalTitle] = useState('') // Local state for new note title
   const [localContent, setLocalContent] = useState('') // Local state for new note content
@@ -31,8 +31,10 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
       setCreatedNoteId(null)
       setLocalTitle('')
       setLocalContent('')
+    } else {
+      setLocalTitle(effectiveNote?.title || '')
     }
-  }, [noteId])
+  }, [noteId, effectiveNote?.title])
 
   useEffect(() => {
     return () => {
@@ -133,11 +135,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
 
   const handleTitleChange = useCallback((e) => {
     const title = e.target.value
-    
-    // Update local state for new notes
-    if (noteId === 'new' && !createdNoteId) {
-      setLocalTitle(title)
-    }
+    setLocalTitle(title)
     
     setSaveStatus('unsaved')
     
@@ -192,6 +190,71 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
     }
   }, [editor])
 
+  const buildUpdatedNotes = useCallback((nextNote) => {
+    const index = notes.findIndex(item => item.id === nextNote.id)
+    if (index === -1) {
+      return [nextNote, ...notes]
+    }
+    const updated = [...notes]
+    updated[index] = { ...updated[index], ...nextNote }
+    return updated
+  }, [notes])
+
+  const handleCloudSaveClick = useCallback(() => {
+    if (!onSaveToCloud) return
+    const nowIso = new Date().toISOString()
+    const content = editor ? editor.getHTML() : localContent
+    const title = effectiveNote?.title || localTitle || ''
+
+    if (noteId === 'new' && !createdNoteId) {
+      const newId = generateId()
+      const newNote = {
+        id: newId,
+        title,
+        content,
+        folderId: activeFolder,
+        tags: [],
+        isFavorite: false,
+        createdAt: nowIso,
+        updatedAt: nowIso
+      }
+      setCreatedNoteId(newId)
+      createNote(activeFolder, newNote)
+      onNoteCreated?.(newId)
+      onSaveToCloud(buildUpdatedNotes(newNote))
+      return
+    }
+
+    const targetId = createdNoteId || noteId
+    if (!targetId || targetId === 'new') {
+      onSaveToCloud(notes)
+      return
+    }
+
+    const updatedNote = {
+      id: targetId,
+      title,
+      content,
+      updatedAt: nowIso
+    }
+    updateNote(targetId, updatedNote)
+    onSaveToCloud(buildUpdatedNotes(updatedNote))
+  }, [
+    onSaveToCloud,
+    editor,
+    localContent,
+    effectiveNote,
+    localTitle,
+    noteId,
+    createdNoteId,
+    activeFolder,
+    createNote,
+    onNoteCreated,
+    buildUpdatedNotes,
+    updateNote,
+    notes
+  ])
+
   // Show welcome screen if no note is selected
   if (!noteId) {
     return (
@@ -234,7 +297,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
           <div className="editor-actions">
             <button
               className="action-btn save-btn"
-              onClick={onSaveToCloud}
+              onClick={handleCloudSaveClick}
               title="Save to cloud"
               aria-label="Save to cloud"
             >
@@ -299,7 +362,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
           type="text"
           className="editor-title"
           placeholder="Title"
-          value={effectiveNote?.title || localTitle || ''}
+          value={(noteId === 'new' || saveStatus === 'unsaved') ? (localTitle || effectiveNote?.title || '') : (effectiveNote?.title || '')}
           onChange={handleTitleChange}
         />
 

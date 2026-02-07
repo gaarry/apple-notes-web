@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { NotesProvider, useNotes } from './context/NotesContext.jsx'
 import Sidebar from './components/Sidebar/Sidebar'
 import Editor from './components/Editor/Editor'
@@ -9,7 +9,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboard'
 import { gistStorage } from './lib/gistStorage'
 
 function AppContent() {
-  const { notes, importNotes } = useNotes()
+  const { notes, importNotes, loading } = useNotes()
   const [selectedNoteId, setSelectedNoteId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteMode, setDeleteMode] = useState(false)
@@ -18,6 +18,8 @@ function AppContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [cloudSaveStatus, setCloudSaveStatus] = useState(null)
+  const autoSaveTimeoutRef = useRef(null)
+  const autoLoadDoneRef = useRef(false)
 
   // Detect mobile viewport
   useEffect(() => {
@@ -102,9 +104,9 @@ function AppContent() {
     setMobileMenuOpen(prev => !prev)
   }, [])
 
-  const handleSaveToCloud = useCallback(async () => {
+  const handleSaveToCloud = useCallback(async (notesOverride = null) => {
     setCloudSaveStatus({ type: 'info', message: 'Saving to cloud...' })
-    const result = await gistStorage.saveNotes(notes)
+    const result = await gistStorage.saveNotes(notesOverride || notes)
     if (result.success) {
       setCloudSaveStatus({
         type: 'success',
@@ -114,6 +116,36 @@ function AppContent() {
     }
     setCloudSaveStatus({ type: 'error', message: result.error || 'Cloud save failed' })
   }, [notes])
+
+  useEffect(() => {
+    if (loading || autoLoadDoneRef.current) return
+    autoLoadDoneRef.current = true
+
+    const loadFromCloud = async () => {
+      const result = await gistStorage.fetchNotes()
+      if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+        importNotes(result.data, false)
+      }
+    }
+
+    loadFromCloud()
+  }, [loading, importNotes, notes.length])
+
+  useEffect(() => {
+    if (loading || !autoLoadDoneRef.current) return
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      gistStorage.saveNotes(notes)
+    }, 1500)
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current)
+      }
+    }
+  }, [notes, loading])
 
   // Keyboard shortcuts
   const shortcuts = useMemo(() => ({
