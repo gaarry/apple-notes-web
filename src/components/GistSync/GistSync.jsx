@@ -14,11 +14,19 @@ export default function GistSync({ notes, onNotesLoaded, onSync }) {
   const [mode, setMode] = useState('read'); // 'read' or 'write'
 
   useEffect(() => {
-    setIsConfigured(gistStorage.isConfigured());
     const savedId = localStorage.getItem('gist_id');
-    if (savedId) {
-      setConfig(prev => ({ ...prev, gistId: savedId }));
+    const savedToken = localStorage.getItem('gist_token');
+    const envGistId = import.meta?.env?.VITE_GIST_ID;
+    const envToken = import.meta?.env?.VITE_GIST_TOKEN;
+    const gistId = savedId || envGistId || '';
+    const token = savedToken || envToken || '';
+
+    if (gistId) {
+      gistStorage.configure(gistId, token || null);
     }
+
+    setConfig({ gistId, token });
+    setIsConfigured(!!gistId);
   }, []);
 
   const loadNotes = useCallback(async () => {

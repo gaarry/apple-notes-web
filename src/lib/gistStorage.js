@@ -8,6 +8,8 @@
  * 3. Paste ID in settings - no token needed for reading!
  */
 
+import { parseNotesPayload, serializeNotesPayload } from '../utils';
+
 const GITHUB_API_BASE = 'https://api.github.com/gists';
 
 class GistStorage {
@@ -22,10 +24,12 @@ class GistStorage {
 
   configure(gistId, token = null) {
     this.gistId = gistId;
-    this.token = token;
+    this.token = token || null;
     localStorage.setItem('gist_id', gistId);
     if (token) {
       localStorage.setItem('gist_token', token);
+    } else {
+      localStorage.removeItem('gist_token');
     }
   }
 
@@ -60,8 +64,9 @@ class GistStorage {
         return { success: true, data: [] }; // Empty notes
       }
 
-      const notes = JSON.parse(content);
-      return { success: true, data: notes };
+      const parsed = JSON.parse(content);
+      const normalized = parseNotesPayload(parsed);
+      return { success: true, data: normalized.notes, meta: normalized };
     } catch (error) {
       console.error('Failed to fetch notes:', error);
       return { success: false, error: error.message };
@@ -95,7 +100,7 @@ class GistStorage {
           description: 'My Notes - synced from Apple Notes Web',
           files: {
             'notes.json': {
-              content: JSON.stringify(notes, null, 2)
+              content: JSON.stringify(serializeNotesPayload({ notes }), null, 2)
             }
           }
         })
@@ -133,7 +138,7 @@ class GistStorage {
           public: false, // Secret gist
           files: {
             'notes.json': {
-              content: '[]'
+              content: JSON.stringify(serializeNotesPayload({ notes: [] }), null, 2)
             }
           }
         })

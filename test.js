@@ -11,6 +11,8 @@ import {
   generatePreview,
   stripHtml,
   htmlToMarkdown,
+  parseNotesPayload,
+  serializeNotesPayload,
   generateId,
   isMobileViewport,
   debounce,
@@ -145,6 +147,34 @@ describe('HTML Processing', () => {
     expect(htmlToMarkdown('<strong>bold</strong>')).toBe('**bold**')
     expect(htmlToMarkdown('<em>italic</em>')).toBe('*italic*')
     expect(htmlToMarkdown('<a href="https://example.com">Link</a>')).toBe('[Link](https://example.com)')
+  })
+})
+
+// ============================================
+// Notes Payload Tests
+// ============================================
+describe('Notes Payload', () => {
+  test('parses legacy array payload', () => {
+    const raw = [{ id: '1' }, { id: '2' }]
+    const parsed = parseNotesPayload(raw)
+    expect(parsed.notes).toHaveLength(2)
+    expect(parsed.folders).toBe(null)
+    expect(parsed.schemaVersion).toBe(1)
+  })
+
+  test('parses object payload', () => {
+    const raw = { schemaVersion: 2, notes: [{ id: '1' }], folders: [{ id: 'all' }] }
+    const parsed = parseNotesPayload(raw)
+    expect(parsed.notes).toHaveLength(1)
+    expect(parsed.folders).toHaveLength(1)
+    expect(parsed.schemaVersion).toBe(2)
+  })
+
+  test('serializes payload consistently', () => {
+    const payload = serializeNotesPayload({ notes: [{ id: 'n1' }], folders: [] })
+    expect(payload.schemaVersion).toBe(1)
+    expect(payload.notes).toHaveLength(1)
+    expect(Array.isArray(payload.folders)).toBe(true)
   })
 })
 

@@ -155,6 +155,45 @@ export function htmlToMarkdown(html) {
 }
 
 // ============================================
+// Notes Payload (Sync)
+// ============================================
+
+/**
+ * Normalize notes payload from sync providers.
+ * @param {*} payload - Raw parsed JSON
+ * @returns {{notes: Array, folders: Array|null, schemaVersion: number}}
+ */
+export function parseNotesPayload(payload) {
+  if (Array.isArray(payload)) {
+    return { notes: payload, folders: null, schemaVersion: 1 }
+  }
+
+  if (payload && typeof payload === 'object') {
+    return {
+      notes: Array.isArray(payload.notes) ? payload.notes : [],
+      folders: Array.isArray(payload.folders) ? payload.folders : null,
+      schemaVersion: typeof payload.schemaVersion === 'number' ? payload.schemaVersion : 1
+    }
+  }
+
+  return { notes: [], folders: null, schemaVersion: 1 }
+}
+
+/**
+ * Build a sync payload for notes and folders.
+ * @param {{notes?: Array, folders?: Array}} options
+ * @returns {{schemaVersion: number, updatedAt: string, notes: Array, folders: Array}}
+ */
+export function serializeNotesPayload({ notes = [], folders = [] } = {}) {
+  return {
+    schemaVersion: 1,
+    updatedAt: new Date().toISOString(),
+    notes: Array.isArray(notes) ? notes : [],
+    folders: Array.isArray(folders) ? folders : []
+  }
+}
+
+// ============================================
 // ID Generation
 // ============================================
 
