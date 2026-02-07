@@ -12,6 +12,8 @@ import { parseNotesPayload, serializeNotesPayload } from '../utils';
 
 const GITHUB_API_BASE = 'https://api.github.com/gists';
 const FALLBACK_CACHE_KEY = 'gist_notes_cache';
+const GIST_API_URL = import.meta?.env?.VITE_GIST_API_URL || '/api/gist';
+const USE_SERVER_API = !!import.meta?.env && !import.meta.env.DEV;
 
 class GistStorage {
   constructor() {
@@ -53,6 +55,24 @@ class GistStorage {
 
   // Public: anyone can read a public gist
   async fetchNotes() {
+    if (USE_SERVER_API) {
+      try {
+        const res = await fetch(GIST_API_URL, { method: 'GET' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data?.success) {
+          return { success: true, data: data.data || [] };
+        }
+        throw new Error(data?.error || 'Server error');
+      } catch (error) {
+        console.error('Failed to fetch notes via API:', error);
+        if (this.fallbackCache?.notes?.length) {
+          return { success: true, data: this.fallbackCache.notes, fallback: true };
+        }
+        return { success: false, error: error.message };
+      }
+    }
+
     if (!this.gistId) {
       if (this.fallbackCache?.notes?.length) {
         return { success: true, data: this.fallbackCache.notes, fallback: true };
@@ -99,6 +119,26 @@ class GistStorage {
 
   // Private: need token to write
   async saveNotes(notes) {
+    if (USE_SERVER_API) {
+      try {
+        const res = await fetch(GIST_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data?.success) {
+          return { success: true };
+        }
+        throw new Error(data?.error || 'Server error');
+      } catch (error) {
+        console.error('Failed to save notes via API:', error);
+        this.setFallbackCache(notes);
+        return { success: true, readOnly: true, fallback: true };
+      }
+    }
+
     if (!this.gistId) {
       this.setFallbackCache(notes);
       return { success: true, readOnly: true, fallback: true };
