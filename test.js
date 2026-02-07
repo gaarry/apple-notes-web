@@ -434,6 +434,50 @@ describe('Search', () => {
 })
 
 // ============================================
+// Utility Functions Tests
+// ============================================
+describe('Utility Functions', () => {
+  test('generateId creates unique strings', () => {
+    const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 9)
+    const id1 = generateId()
+    const id2 = generateId()
+    expect(id1).not.toBe(id2)
+    expect(typeof id1).toBe('string')
+    expect(id1.length).toBeGreaterThan(10)
+  })
+  
+  test('countWords handles empty and whitespace', () => {
+    const countWords = (text) => text ? text.split(/\s+/).filter(Boolean).length : 0
+    expect(countWords('')).toBe(0)
+    expect(countWords(null)).toBe(0)
+    expect(countWords('   ')).toBe(0)
+    expect(countWords('hello')).toBe(1)
+  })
+  
+  test('stripHtml removes all tags', () => {
+    const stripHtml = (html) => html ? html.replace(/<[^>]+>/g, '') : ''
+    expect(stripHtml('<p>Hello</p>')).toBe('Hello')
+    expect(stripHtml('<div><span>Test</span></div>')).toBe('Test')
+    expect(stripHtml('')).toBe('')
+  })
+  
+  test('htmlToMarkdown converts basic tags', () => {
+    const htmlToMarkdown = (html) => {
+      if (!html) return ''
+      return html
+        .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+        .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
+        .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
+        .replace(/<[^>]+>/g, '')
+        .trim()
+    }
+    expect(htmlToMarkdown('<h1>Title</h1>')).toBe('# Title')
+    expect(htmlToMarkdown('<strong>bold</strong>')).toBe('**bold**')
+    expect(htmlToMarkdown('<em>italic</em>')).toBe('*italic*')
+  })
+})
+
+// ============================================
 // Summary
 // ============================================
 console.log('\n' + '='.repeat(50))

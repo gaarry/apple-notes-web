@@ -1,0 +1,69 @@
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--bg-main, #fff);
+}
+
+.error-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-icon {
+  width: 64px;
+  height: 64px;
+  color: var(--danger, #ff3b30);
+  margin-bottom: 24px;
+}
+
+.error-content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary, #000);
+  margin: 0 0 8px;
+}
+
+.error-content p {
+  font-size: 15px;
+  color: var(--text-secondary, #8e8e93);
+  margin: 0 0 24px;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.retry-btn,
+.reload-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-btn {
+  background: var(--primary, #007aff);
+  color: white;
+  border: none;
+}
+
+.retry-btn:hover {
+  background: var(--primary-hover, #0056b3);
+}
+
+.reload-btn {
+  background: transparent;
+  color: var(--text-primary, #000);
+  border: 1px solid var(--border-color, #e5e5e5);
+}
+
+.reload-btn:hover {
+  background: var(--bg-hover, rgba(0, 122, 255, 0.08));
+}

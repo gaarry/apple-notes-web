@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { generateId, storageGet, storageSet } from '../utils'
 
 const NotesContext = createContext(null)
 
@@ -21,16 +22,11 @@ export function NotesProvider({ children }) {
 
   // Load from localStorage
   useEffect(() => {
-    const savedData = localStorage.getItem('apple-notes-web')
+    const savedData = storageGet('apple-notes-web', null)
     if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData)
-        setNotes(parsed.notes || [])
-        if (parsed.folders) {
-          setFolders(parsed.folders)
-        }
-      } catch (e) {
-        console.error('Failed to parse notes:', e)
+      setNotes(savedData.notes || [])
+      if (savedData.folders) {
+        setFolders(savedData.folders)
       }
     }
     setLoading(false)
@@ -39,23 +35,21 @@ export function NotesProvider({ children }) {
   // Save to localStorage
   useEffect(() => {
     if (!loading) {
-      localStorage.setItem('apple-notes-web', JSON.stringify({
-        notes,
-        folders
-      }))
+      storageSet('apple-notes-web', { notes, folders })
     }
   }, [notes, folders, loading])
 
-  const createNote = useCallback((folderId = null) => {
+  const createNote = useCallback((folderId = null, initialData = {}) => {
     const newNote = {
-      id: Date.now().toString(),
+      id: generateId(),
       title: '',
       content: '',
       folderId: folderId || activeFolder,
       tags: [],
       isFavorite: false,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      ...initialData
     }
     setNotes(prev => [newNote, ...prev])
     return newNote.id

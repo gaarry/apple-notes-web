@@ -1,29 +1,38 @@
-import React, { useEffect, useCallback, useState, useRef } from 'react'
+import React, { useEffect, useCallback, useState, useRef, useMemo } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { useNotes } from '../../context/NotesContext'
+import { formatLongDate, countWords } from '../../utils'
 import Toolbar from '../Toolbar/Toolbar'
 import './Editor.css'
 
-export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isMobile }) {
+export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isMobile, onNoteCreated }) {
   const { notes, createNote, updateNote, getNote, deleteNote, loading } = useNotes()
-  const [isNewNote, setIsNewNote] = useState(false)
+  const [createdNoteId, setCreatedNoteId] = useState(null)
+  const [localTitle, setLocalTitle] = useState('') // Local state for new note title
+  const [localContent, setLocalContent] = useState('') // Local state for new note content
   const [saveStatus, setSaveStatus] = useState('saved') // 'saved', 'saving', 'unsaved'
   const [wordCount, setWordCount] = useState(0)
   const saveTimeoutRef = useRef(null)
 
+  // Use createdNoteId for new notes after creation
+  const effectiveNoteId = createdNoteId || noteId
   const note = noteId === 'new' ? null : getNote(noteId)
+  
+  // Get effective note after creation
+  const effectiveNote = effectiveNoteId && effectiveNoteId !== 'new' ? getNote(effectiveNoteId) : null
 
+  // Reset local state when switching notes
   useEffect(() => {
-    if (noteId === 'new' && !isNewNote) {
-      setIsNewNote(true)
-    } else if (noteId !== 'new' && isNewNote) {
-      setIsNewNote(false)
+    if (noteId === 'new') {
+      setCreatedNoteId(null)
+      setLocalTitle('')
+      setLocalContent('')
     }
-  }, [noteId, isNewNote])
+  }, [noteId])
 
   const editor = useEditor({
     extensions: [
@@ -39,7 +48,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
         }
       })
     ],
-    content: note?.content || '',
+    content: note?.content || localContent || '',
     editorProps: {
       attributes: {
         class: 'editor-content',
@@ -49,28 +58,35 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
       }
     },
     onUpdate: ({ editor }) => {
-      // Update word count
-      const text = editor.getText()
-      setWordCount(text.split(/\s+/).filter(Boolean).length)
+      // Update word count using utility
+      setWordCount(countWords(editor.getText()))
       
       // Set unsaved status
       setSaveStatus('unsaved')
       
-      // Auto-save after 1 second of inactivity
+      // Auto-save after 1 second of inactivity (longer on mobile for better UX)
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current)
       }
       
+      const saveDelay = isMobile ? 1500 : 1000 // Longer delay on mobile
+      
       saveTimeoutRef.current = setTimeout(() => {
         if (noteId === 'new') {
-          const newId = createNote()
-          setIsNewNote(false)
-          updateNote(newId, { content: editor.getHTML() })
+          // Create note only once, then update the created note
+          if (!createdNoteId) {
+            const newId = createNote()
+            setCreatedNoteId(newId)
+            updateNote(newId, { content: editor.getHTML() })
+            onNoteCreated?.(newId)
+          } else {
+            updateNote(createdNoteId, { content: editor.getHTML() })
+          }
         } else {
           updateNote(noteId, { content: editor.getHTML() })
         }
         setSaveStatus('saved')
-      }, 1000)
+      }, saveDelay)
     }
   })
 
@@ -100,50 +116,61 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
     if (editor && note?.content !== undefined) {
       const currentContent = editor.getHTML()
       if (currentContent !== note.content) {
-        editor.commands.setContent(note.content || '')
+        editor.commands.setContent(note.content || '', false) // false = don't emit update
       }
       // Update word count when switching notes
-      const text = editor.getText()
-      setWordCount(text.split(/\s+/).filter(Boolean).length)
+      setWordCount(countWords(editor.getText()))
     }
   }, [noteId, editor, note?.content])
 
   const handleTitleChange = useCallback((e) => {
     const title = e.target.value
+    
+    // Update local state for new notes
+    if (noteId === 'new' && !createdNoteId) {
+      setLocalTitle(title)
+    }
+    
     setSaveStatus('unsaved')
     
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
     }
     
+    const saveDelay = isMobile ? 1500 : 1000
+    
     saveTimeoutRef.current = setTimeout(() => {
       if (noteId === 'new') {
-        const newId = createNote()
-        setIsNewNote(false)
-        updateNote(newId, { title })
+        // Create note only once, then update the created note
+        if (!createdNoteId) {
+          const newId = createNote()
+          setCreatedNoteId(newId)
+          updateNote(newId, { title })
+          onNoteCreated?.(newId)
+        } else {
+          updateNote(createdNoteId, { title })
+        }
       } else {
         updateNote(noteId, { title })
       }
       setSaveStatus('saved')
-    }, 1000)
-  }, [noteId, createNote, updateNote])
+    }, saveDelay)
+  }, [noteId, createNote, updateNote, isMobile, createdNoteId, onNoteCreated])
 
   const handleDelete = useCallback(() => {
-    if (noteId && noteId !== 'new') {
-      deleteNote(noteId)
-      onDeleteNote(noteId)
+    const targetId = createdNoteId || noteId
+    if (targetId && targetId !== 'new') {
+      deleteNote(targetId)
+      onDeleteNote(targetId)
+      setCreatedNoteId(null)
     }
-  }, [noteId, onDeleteNote])
+  }, [noteId, createdNoteId, onDeleteNote])
 
-  const formatDate = useCallback((dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }, [])
+  // Memoized formatted date
+  const formattedDate = useMemo(() => 
+    formatLongDate(note?.updatedAt),
+    [note?.updatedAt]
+  )
 
   const handleUndo = useCallback(() => {
     if (editor) {
@@ -185,7 +212,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
               {saveStatus === 'unsaved' && '● Unsaved'}
             </span>
             <span className="note-date">
-              {note?.updatedAt ? formatDate(note.updatedAt) : 'Just now'}
+              {formattedDate}
             </span>
             <span className="word-count">
               {wordCount} words
@@ -246,7 +273,7 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
           type="text"
           className="editor-title"
           placeholder="Title"
-          value={note?.title || ''}
+          value={effectiveNote?.title || localTitle || ''}
           onChange={handleTitleChange}
         />
 

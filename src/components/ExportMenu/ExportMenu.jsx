@@ -1,12 +1,35 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useEffect, useRef } from 'react'
 import { useNotes } from '../../context/NotesContext'
+import { htmlToMarkdown, downloadFile } from '../../utils'
 import './ExportMenu.css'
 
 export default function ExportMenu({ noteId, onClose }) {
   const { getNote } = useNotes()
   const [exporting, setExporting] = useState(false)
+  const menuRef = useRef(null)
 
   const note = noteId === 'new' ? null : getNote(noteId)
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
+
+  // Focus trap and initial focus
+  useEffect(() => {
+    if (menuRef.current) {
+      const firstButton = menuRef.current.querySelector('button')
+      firstButton?.focus()
+    }
+  }, [])
 
   const exportAsMarkdown = useCallback(() => {
     if (!note) return
@@ -14,52 +37,8 @@ export default function ExportMenu({ noteId, onClose }) {
     setExporting(true)
     
     try {
-      // Convert HTML to Markdown
-      let content = note.content || ''
-      
-      // Basic HTML to Markdown conversion
-      content = content
-        .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
-        .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
-        .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
-        .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
-        .replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**')
-        .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
-        .replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*')
-        .replace(/<u[^>]*>(.*?)<\/u>/gi, '<u>$1</u>')
-        .replace(/<s[^>]*>(.*?)<\/s>/gi, '~~$1~~')
-        .replace(/<strike[^>]*>(.*?)<\/strike>/gi, '~~$1~~')
-        .replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`')
-        .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
-        .replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, '![$2]($1)')
-        .replace(/<img[^>]*src="([^"]*)"[^>]*\/?>/gi, '![]($1)')
-        .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
-        .replace(/<ul[^>]*>|<\/ul>|<ol[^>]*>|<\/ol>/gi, '\n')
-        .replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n')
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n')
-        .replace(/<hr\s*\/?>/gi, '\n---\n')
-        .replace(/<[^>]+>/g, '') // Remove remaining HTML tags
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/\n{3,}/g, '\n\n') // Remove extra newlines
-        .trim()
-
-      const markdown = `# ${note.title || 'Untitled Note'}\n\n${content}`
-      
-      // Create and download file
-      const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${note.title || 'untitled'}.md`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      const markdown = `# ${note.title || 'Untitled Note'}\n\n${htmlToMarkdown(note.content || '')}`
+      downloadFile(markdown, `${note.title || 'untitled'}.md`, 'text/markdown;charset=utf-8')
       
       setExporting(false)
       onClose?.()
@@ -82,16 +61,8 @@ export default function ExportMenu({ noteId, onClose }) {
       
       const plainText = `${note.title || 'Untitled Note'}\n\n${text}`
       
-      // Create and download file
-      const blob = new Blob([plainText], { type: 'text/plain;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${note.title || 'untitled'}.txt`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      // Download file using utility
+      downloadFile(plainText, `${note.title || 'untitled'}.txt`, 'text/plain;charset=utf-8')
       
       setExporting(false)
       onClose?.()
@@ -134,16 +105,8 @@ export default function ExportMenu({ noteId, onClose }) {
 </body>
 </html>`
       
-      // Create and download file
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${note.title || 'untitled'}.html`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      // Download file using utility
+      downloadFile(html, `${note.title || 'untitled'}.html`, 'text/html;charset=utf-8')
       
       setExporting(false)
       onClose?.()
@@ -174,9 +137,9 @@ export default function ExportMenu({ noteId, onClose }) {
   }, [note, onClose])
 
   return (
-    <div className="export-menu">
+    <div className="export-menu" ref={menuRef} role="dialog" aria-modal="true" aria-labelledby="export-title">
       <div className="export-menu-header">
-        <h3>Export Note</h3>
+        <h3 id="export-title">Export Note</h3>
         <button className="close-btn" onClick={onClose} aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="18" y1="6" x2="6" y2="18" />

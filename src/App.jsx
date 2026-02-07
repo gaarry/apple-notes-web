@@ -45,6 +45,11 @@ function AppContent() {
     setSelectedNoteId(null)
   }, [])
 
+  const handleNoteCreated = useCallback((newId) => {
+    // Update selected note ID to the newly created note's actual ID
+    setSelectedNoteId(newId)
+  }, [])
+
   const handleSearch = useCallback((query) => {
     setSearchQuery(query)
   }, [])
@@ -144,6 +149,7 @@ function AppContent() {
       <Editor
         noteId={selectedNoteId}
         onDeleteNote={handleDeleteNote}
+        onNoteCreated={handleNoteCreated}
         deleteMode={deleteMode}
         onExport={handleExport}
         isMobile={isMobile}

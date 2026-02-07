@@ -113,6 +113,17 @@ html.dark {
 /* Buttons */
 button {
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Mobile touch optimization */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, [contenteditable] {
+  touch-action: manipulation;
 }
 
 /* Inputs */

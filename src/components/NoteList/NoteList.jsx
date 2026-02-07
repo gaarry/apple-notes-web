@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react'
-import { useNotes } from '../../context/NotesContext'
+import { formatTimeAgo, generatePreview } from '../../utils'
 import './NoteList.css'
 
 const NoteItem = React.memo(function NoteItem({ 
@@ -12,32 +12,11 @@ const NoteItem = React.memo(function NoteItem({
 }) {
   const [showMenu, setShowMenu] = useState(false)
   
-  const formatDate = useCallback((dateString) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now - date
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-    
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
-    
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    })
-  }, [])
+  // Use memoized format function
+  const formattedDate = useMemo(() => formatTimeAgo(note.updatedAt), [note.updatedAt])
 
-  const getPreview = useCallback(() => {
-    if (!note.content) return 'No content'
-    const div = document.createElement('div')
-    div.innerHTML = note.content
-    const text = div.textContent || div.innerText || ''
-    return text.slice(0, 100) + (text.length > 100 ? '...' : '')
-  }, [note.content])
+  // Use optimized preview generation
+  const preview = useMemo(() => generatePreview(note.content, 100), [note.content])
 
   return (
     <li className={`note-item-wrapper ${isSelected ? 'selected' : ''}`}>
@@ -61,12 +40,12 @@ const NoteItem = React.memo(function NoteItem({
           </div>
           
           <p className="note-preview">
-            {getPreview()}
+            {preview}
           </p>
           
           <div className="note-item-footer">
             <span className="note-date">
-              {formatDate(note.updatedAt)}
+              {formattedDate}
             </span>
             {note.tags && note.tags.length > 0 && (
               <div className="note-tags">
@@ -110,6 +89,7 @@ export default function NoteList({
   showActions = false,
   emptyMessage = 'No notes yet'
 }) {
+  // Optimized grouping with useMemo
   const groupedNotes = useMemo(() => {
     const groups = {
       today: [],
@@ -119,23 +99,23 @@ export default function NoteList({
     }
     
     const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const yesterday = new Date(today - 86400000)
-    const weekAgo = new Date(today - 7 * 86400000)
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+    const yesterdayStart = todayStart - 86400000
+    const weekAgoStart = todayStart - 7 * 86400000
     
-    notes.forEach(note => {
-      const noteDate = new Date(note.updatedAt)
+    for (const note of notes) {
+      const noteDate = new Date(note.updatedAt).getTime()
       
-      if (noteDate >= today) {
+      if (noteDate >= todayStart) {
         groups.today.push(note)
-      } else if (noteDate >= yesterday) {
+      } else if (noteDate >= yesterdayStart) {
         groups.yesterday.push(note)
-      } else if (noteDate >= weekAgo) {
+      } else if (noteDate >= weekAgoStart) {
         groups.thisWeek.push(note)
       } else {
         groups.older.push(note)
       }
-    })
+    }
     
     return groups
   }, [notes])
