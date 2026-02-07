@@ -6,6 +6,7 @@ import ExportMenu from './components/ExportMenu/ExportMenu'
 import Layout from './components/Layout/Layout'
 import GistSync from './components/GistSync/GistSync'
 import { useKeyboardShortcuts } from './hooks/useKeyboard'
+import { gistStorage } from './lib/gistStorage'
 
 function AppContent() {
   const { notes, importNotes } = useNotes()
@@ -16,6 +17,7 @@ function AppContent() {
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [cloudSaveStatus, setCloudSaveStatus] = useState(null)
 
   // Detect mobile viewport
   useEffect(() => {
@@ -99,6 +101,19 @@ function AppContent() {
   const handleToggleMobileMenu = useCallback(() => {
     setMobileMenuOpen(prev => !prev)
   }, [])
+
+  const handleSaveToCloud = useCallback(async () => {
+    setCloudSaveStatus({ type: 'info', message: 'Saving to cloud...' })
+    const result = await gistStorage.saveNotes(notes)
+    if (result.success) {
+      setCloudSaveStatus({
+        type: 'success',
+        message: result.fallback ? 'Saved to local cache' : 'Saved to cloud'
+      })
+      return
+    }
+    setCloudSaveStatus({ type: 'error', message: result.error || 'Cloud save failed' })
+  }, [notes])
 
   // Keyboard shortcuts
   const shortcuts = useMemo(() => ({
@@ -185,6 +200,8 @@ function AppContent() {
         deleteMode={deleteMode}
         onExport={handleExport}
         isMobile={isMobile}
+        onSaveToCloud={handleSaveToCloud}
+        cloudSaveStatus={cloudSaveStatus}
       />
       
       {showExportMenu && (

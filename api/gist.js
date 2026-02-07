@@ -17,7 +17,13 @@ async function fetchGist(gistId, token) {
   }
   const res = await fetch(url, { headers })
   if (!res.ok) {
-    return { ok: false, status: res.status }
+    let details = null
+    try {
+      details = await res.json()
+    } catch {
+      details = { message: 'Failed to parse GitHub response' }
+    }
+    return { ok: false, status: res.status, details }
   }
   const data = await res.json()
   const content = data.files?.['notes.json']?.content
@@ -47,7 +53,16 @@ async function saveGist(gistId, token, notes) {
     }
   })
   const res = await fetch(url, { method: 'PATCH', headers, body })
-  return res.ok
+  if (!res.ok) {
+    let details = null
+    try {
+      details = await res.json()
+    } catch {
+      details = { message: 'Failed to parse GitHub response' }
+    }
+    return { ok: false, status: res.status, details }
+  }
+  return { ok: true }
 }
 
 export default async function handler(req, res) {
@@ -62,7 +77,12 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const result = await fetchGist(gistId, token)
     if (!result.ok) {
-      res.status(result.status || 500).json({ success: false, error: 'Failed to fetch gist' })
+      res.status(result.status || 500).json({ 
+        success: false, 
+        error: 'Failed to fetch gist',
+        status: result.status,
+        details: result.details
+      })
       return
     }
     res.status(200).json({ success: true, data: result.notes })
@@ -75,9 +95,14 @@ export default async function handler(req, res) {
       return
     }
     const notes = req.body?.notes || []
-    const ok = await saveGist(gistId, token, notes)
-    if (!ok) {
-      res.status(500).json({ success: false, error: 'Failed to save gist' })
+    const result = await saveGist(gistId, token, notes)
+    if (!result.ok) {
+      res.status(result.status || 500).json({ 
+        success: false, 
+        error: 'Failed to save gist',
+        status: result.status,
+        details: result.details
+      })
       return
     }
     res.status(200).json({ success: true })

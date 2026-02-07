@@ -9,7 +9,7 @@ import { formatLongDate, countWords } from '../../utils'
 import Toolbar from '../Toolbar/Toolbar'
 import './Editor.css'
 
-export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isMobile, onNoteCreated }) {
+export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isMobile, onNoteCreated, onSaveToCloud, cloudSaveStatus }) {
   const { notes, createNote, updateNote, getNote, deleteNote, loading } = useNotes()
   const [createdNoteId, setCreatedNoteId] = useState(null)
   const [localTitle, setLocalTitle] = useState('') // Local state for new note title
@@ -219,6 +219,11 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
               {saveStatus === 'saving' && '💾 Saving...'}
               {saveStatus === 'unsaved' && '● Unsaved'}
             </span>
+            {cloudSaveStatus?.message && (
+              <span className={`cloud-save-status ${cloudSaveStatus.type || ''}`}>
+                {cloudSaveStatus.message}
+              </span>
+            )}
             <span className="note-date">
               {formattedDate}
             </span>
@@ -227,6 +232,18 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
             </span>
           </div>
           <div className="editor-actions">
+            <button
+              className="action-btn save-btn"
+              onClick={onSaveToCloud}
+              title="Save to cloud"
+              aria-label="Save to cloud"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 7.5A4.5 4.5 0 0 0 12 5a4.5 4.5 0 0 0-8 3.5C4 11 5.5 12 7 12h11a3 3 0 0 0 2-4.5z" />
+                <path d="M12 12v7" />
+                <polyline points="8 15 12 19 16 15" />
+              </svg>
+            </button>
             <button
               className="action-btn"
               onClick={handleUndo}
