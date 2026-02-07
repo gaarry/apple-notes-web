@@ -12,8 +12,8 @@ import { parseNotesPayload, serializeNotesPayload } from '../utils';
 
 const GITHUB_API_BASE = 'https://api.github.com/gists';
 const FALLBACK_CACHE_KEY = 'gist_notes_cache';
-const GIST_API_URL = import.meta?.env?.VITE_GIST_API_URL || '/api/gist';
-const USE_SERVER_API = !!import.meta?.env && !import.meta.env.DEV;
+const GIST_API_URL = (typeof importMeta !== 'undefined' && importMeta?.env?.VITE_GIST_API_URL) || '/api/gist';
+const USE_SERVER_API = (typeof importMeta !== 'undefined' && !!importMeta?.env && !importMeta?.env?.DEV) || false;
 
 class GistStorage {
   constructor() {

@@ -16,8 +16,8 @@ export default function GistSync({ notes, onNotesLoaded, onSync }) {
   useEffect(() => {
     const savedId = localStorage.getItem('gist_id');
     const savedToken = localStorage.getItem('gist_token');
-    const envGistId = import.meta?.env?.VITE_GIST_ID;
-    const envToken = import.meta?.env?.VITE_GIST_TOKEN;
+    const envGistId = (typeof importMeta !== 'undefined' && importMeta?.env?.VITE_GIST_ID) || '';
+    const envToken = (typeof importMeta !== 'undefined' && importMeta?.env?.VITE_GIST_TOKEN) || '';
     const gistId = savedId || envGistId || '';
     const token = savedToken || envToken || '';
 
