@@ -1,12 +1,12 @@
 /**
  * Share Token API Handler - Optimized for speed
- * Uses in-memory cache + localStorage fallback
+ * Uses in-memory cache only (no localStorage in serverless)
  */
 
 const SHARE_TOKENS_GIST_ID = process.env.SHARE_TOKENS_GIST_ID || process.env.GIST_ID
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
-// In-memory cache for this invocation
+// In-memory cache for this invocation only
 let memoryCache = null
 
 // Build share tokens payload
@@ -25,40 +25,11 @@ function generateToken() {
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
-// Get tokens from cache (memory + localStorage)
+// Get tokens from memory cache only (fast)
 async function getCachedTokens() {
   if (memoryCache !== null) return memoryCache
-  
-  // Try localStorage first (fast)
-  try {
-    const raw = localStorage?.getItem('share_tokens_cache')
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      // Cache valid for 5 minutes
-      if (parsed && parsed.cachedAt && (Date.now() - parsed.cachedAt < 5 * 60 * 1000)) {
-        memoryCache = parsed.tokens || []
-        return memoryCache
-      }
-    }
-  } catch (e) {
-    // localStorage not available or parse failed
-  }
-  
   memoryCache = []
   return memoryCache
-}
-
-// Save to localStorage (async, non-blocking)
-async function saveToCache(tokens) {
-  memoryCache = tokens
-  try {
-    localStorage?.setItem('share_tokens_cache', JSON.stringify({
-      tokens,
-      cachedAt: Date.now()
-    }))
-  } catch (e) {
-    // localStorage not available
-  }
 }
 
 // Validate a share token
@@ -97,7 +68,6 @@ async function createShareToken(noteId, noteTitle) {
     viewCount: 0
   }
 
-  // Update or add token
   const existingIndex = tokens.findIndex(t => t.noteId === noteId)
   if (existingIndex >= 0) {
     tokens[existingIndex] = { ...tokens[existingIndex], ...newToken }
@@ -105,11 +75,7 @@ async function createShareToken(noteId, noteTitle) {
     tokens.push(newToken)
   }
 
-  await saveToCache(tokens)
-  
-  // Background sync to Gist (don't wait)
-  syncToGist(tokens).catch(() => {})
-  
+  memoryCache = tokens
   return newToken
 }
 
@@ -123,49 +89,8 @@ async function revokeShareToken(noteId) {
   }
 
   tokens[index].revoked = true
-  await saveToCache(tokens)
-  
-  // Background sync to Gist (don't wait)
-  syncToGist(tokens).catch(() => {})
-  
+  memoryCache = tokens
   return { success: true }
-}
-
-// Background sync to Gist (fire and forget)
-async function syncToGist(tokens) {
-  if (!SHARE_TOKENS_GIST_ID || !GITHUB_TOKEN) return false
-  
-  try {
-    const url = `https://api.github.com/gists/${SHARE_TOKENS_GIST_ID}`
-    const body = JSON.stringify({
-      description: 'Apple Notes Web - Share Tokens',
-      files: {
-        'share-tokens.json': {
-          content: JSON.stringify(buildPayload(tokens), null, 2)
-        }
-      }
-    })
-    
-    await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/vnd.github.v3+json',
-        Authorization: `token ${GITHUB_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body
-    })
-    return true
-  } catch (error) {
-    console.error('Background sync failed:', error)
-    return false
-  }
-}
-
-// Clear cache (for testing)
-function clearCache() {
-  memoryCache = null
-  localStorage?.removeItem('share_tokens_cache')
 }
 
 export default async function handler(req) {
@@ -185,29 +110,12 @@ export default async function handler(req) {
     return new Response(null, { status: 204, headers: corsHeaders })
   }
 
-  // Clear cache endpoint (for testing)
-  if (method === 'POST' && url.pathname === '/api/share/clear') {
-    clearCache()
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  }
-
-  // GET /api/share?token=xxx - Validate token (FAST - uses cache)
+  // GET /api/share?token=xxx - Validate token
   if (method === 'GET' && token) {
     try {
       const result = await validateToken(token)
-      if (result.valid) {
-        // Background increment view count
-        incrementViewCount(token).catch(() => {})
-        return new Response(JSON.stringify(result), {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
-      }
       return new Response(JSON.stringify(result), {
-        status: 404,
+        status: result.valid ? 200 : 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     } catch (error) {
@@ -218,7 +126,7 @@ export default async function handler(req) {
     }
   }
 
-  // POST /api/share - Create token (FAST - uses cache)
+  // POST /api/share - Create token
   if (method === 'POST') {
     try {
       const body = await req.json()
@@ -241,7 +149,7 @@ export default async function handler(req) {
     }
   }
 
-  // DELETE /api/share?noteId=xxx - Revoke token (FAST - uses cache)
+  // DELETE /api/share?noteId=xxx - Revoke token
   if (method === 'DELETE') {
     const noteId = url.searchParams.get('noteId')
     if (!noteId) {
@@ -261,14 +169,4 @@ export default async function handler(req) {
     status: 405,
     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
   })
-}
-
-// Background increment view count
-async function incrementViewCount(token) {
-  const tokens = await getCachedTokens()
-  const index = tokens.findIndex(t => t.token === token)
-  if (index !== -1) {
-    tokens[index].viewCount = (tokens[index].viewCount || 0) + 1
-    await saveToCache(tokens)
-  }
 }
