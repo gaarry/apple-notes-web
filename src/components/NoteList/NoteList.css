@@ -2,6 +2,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 8px;
+  scrollbar-gutter: stable;
 }
 
 .notes-container {
@@ -27,6 +28,8 @@
 
 .note-item-wrapper {
   margin-bottom: 2px;
+  content-visibility: auto;
+  contain-intrinsic-size: 96px;
 }
 
 .note-item {
@@ -35,7 +38,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 12px;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
   cursor: pointer;
@@ -45,10 +48,17 @@
 
 .note-item:hover {
   background: var(--bg-hover, rgba(0, 122, 255, 0.08));
+  border-color: rgba(0, 122, 255, 0.1);
 }
 
 .note-item.selected {
-  background: rgba(0, 122, 255, 0.15);
+  background: var(--primary-light, rgba(0, 122, 255, 0.15));
+  border-color: rgba(0, 122, 255, 0.2);
+}
+
+.note-item:focus-visible {
+  outline: 2px solid var(--primary, #007aff);
+  outline-offset: 2px;
 }
 
 .note-item-content {

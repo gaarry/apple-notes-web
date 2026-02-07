@@ -46,6 +46,7 @@
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
+  background: var(--bg-main, #fff);
 }
 
 .editor-header {
@@ -53,6 +54,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color, #e5e5e5);
 }
 
 .editor-info {

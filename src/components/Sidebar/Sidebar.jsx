@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo, useDeferredValue } from 'react'
 import { useNotes } from '../../context/NotesContext'
 import Search from '../Search/Search'
 import NoteList from '../NoteList/NoteList'
@@ -32,14 +32,17 @@ export default function Sidebar({
     }
   }, [deleteMode, toggleFavorite, onSelectNote])
 
-  const filteredNotes = getFilteredNotes().filter(note => {
-    if (!searchQuery.trim()) return true
-    const lowerQuery = searchQuery.toLowerCase()
-    return (
+  const deferredQuery = useDeferredValue(searchQuery)
+
+  const filteredNotes = useMemo(() => {
+    const baseNotes = getFilteredNotes()
+    if (!deferredQuery.trim()) return baseNotes
+    const lowerQuery = deferredQuery.toLowerCase()
+    return baseNotes.filter(note => (
       (note.title || '').toLowerCase().includes(lowerQuery) ||
       (note.content || '').toLowerCase().includes(lowerQuery)
-    )
-  })
+    ))
+  }, [getFilteredNotes, deferredQuery])
 
   return (
     <aside 

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { generateId, storageGet, storageSet } from '../utils'
 
 const NotesContext = createContext(null)
@@ -19,6 +19,7 @@ export function NotesProvider({ children }) {
   ])
   const [activeFolder, setActiveFolder] = useState('all')
   const [loading, setLoading] = useState(true)
+  const saveTimeoutRef = useRef(null)
 
   // Load from localStorage
   useEffect(() => {
@@ -32,10 +33,22 @@ export function NotesProvider({ children }) {
     setLoading(false)
   }, [])
 
-  // Save to localStorage
+  // Save to localStorage (debounced to avoid frequent writes)
   useEffect(() => {
-    if (!loading) {
+    if (loading) return
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
       storageSet('apple-notes-web', { notes, folders })
+    }, 300)
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
     }
   }, [notes, folders, loading])
 

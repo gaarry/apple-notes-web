@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { formatTimeAgo, generatePreview } from '../../utils'
 import './NoteList.css'
 
@@ -10,8 +10,6 @@ const NoteItem = React.memo(function NoteItem({
   onMoveToFolder,
   showActions 
 }) {
-  const [showMenu, setShowMenu] = useState(false)
-  
   // Use memoized format function
   const formattedDate = useMemo(() => formatTimeAgo(note.updatedAt), [note.updatedAt])
 

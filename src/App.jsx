@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import { NotesProvider, useNotes } from './context/NotesContext.jsx'
 import Sidebar from './components/Sidebar/Sidebar'
 import Editor from './components/Editor/Editor'
@@ -19,12 +19,31 @@ function AppContent() {
 
   // Detect mobile viewport
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768)
+    if (typeof window === 'undefined') return
+    if (!window.matchMedia) {
+      const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+      checkMobile()
+      window.addEventListener('resize', checkMobile)
+      return () => window.removeEventListener('resize', checkMobile)
     }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+
+    const mediaQuery = window.matchMedia('(max-width: 768px)')
+    const handleChange = (event) => setIsMobile(event.matches)
+    setIsMobile(mediaQuery.matches)
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange)
+    } else {
+      mediaQuery.addListener(handleChange)
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleChange)
+      } else {
+        mediaQuery.removeListener(handleChange)
+      }
+    }
   }, [])
 
   const handleSelectNote = useCallback((id) => {
@@ -82,7 +101,7 @@ function AppContent() {
   }, [])
 
   // Keyboard shortcuts
-  const shortcuts = {
+  const shortcuts = useMemo(() => ({
     'ctrl+n': handleCreateNote,
     'ctrl+b': () => {
       const searchInput = document.querySelector('.search-input')
@@ -97,7 +116,7 @@ function AppContent() {
       setShowExportMenu(false)
       setMobileMenuOpen(false)
     }
-  }
+  }), [handleCreateNote, handleToggleDeleteMode, handleToggleDarkMode, handleExport])
 
   useKeyboardShortcuts(shortcuts)
 

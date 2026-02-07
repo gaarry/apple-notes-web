@@ -34,6 +34,14 @@ export default function Editor({ noteId, onDeleteNote, deleteMode, onExport, isM
     }
   }, [noteId])
 
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const editor = useEditor({
     extensions: [
       StarterKit,
