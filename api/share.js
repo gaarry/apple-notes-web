@@ -1,42 +1,42 @@
-// Share Token API - Express style for Vercel
+// Share Token API - Minimal working version
 const tokens = []
 
-function generateToken() {
-  return Math.random().toString(36).substring(2, 34) + Math.random().toString(36).substring(2, 34)
-}
-
-export default async function handler(req, res) {
+export default function handler(req) {
   const url = new URL(req.url, `http://${req.headers.host}`)
+  const method = req.method
   const token = url.searchParams.get('token')
   const noteId = url.searchParams.get('noteId')
 
   // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-
-  if (req.method === 'OPTIONS') {
-    return res.status(204).send()
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
   }
 
-  // GET ?token=xxx - Validate
-  if (req.method === 'GET' && token) {
+  if (method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers })
+  }
+
+  // GET ?token=xxx
+  if (method === 'GET' && token) {
     const found = tokens.find(t => t.token === token && !t.revoked)
     if (found) {
-      return res.status(200).json({ valid: true, noteId: found.noteId, noteTitle: found.noteTitle })
+      return new Response(JSON.stringify({ valid: true, noteId: found.noteId, noteTitle: found.noteTitle }), { headers })
     }
-    return res.status(404).json({ valid: false, error: 'Invalid token' })
+    return new Response(JSON.stringify({ valid: false, error: 'Invalid token' }), { status: 404, headers })
   }
 
-  // POST - Create token
-  if (req.method === 'POST') {
+  // POST
+  if (method === 'POST') {
     try {
-      const body = req.body || {}
+      const body = JSON.parse(req.body || '{}')
       if (!body.noteId) {
-        return res.status(400).json({ success: false, error: 'noteId required' })
+        return new Response(JSON.stringify({ success: false, error: 'noteId required' }), { status: 400, headers })
       }
       const newToken = {
-        token: generateToken(),
+        token: Math.random().toString(36).substring(2, 34) + Math.random().toString(36).substring(2, 34),
         noteId: body.noteId,
         noteTitle: body.noteTitle || 'Untitled',
         createdAt: Date.now(),
@@ -45,22 +45,21 @@ export default async function handler(req, res) {
       const idx = tokens.findIndex(t => t.noteId === body.noteId)
       if (idx >= 0) tokens[idx] = newToken
       else tokens.push(newToken)
-      
-      return res.status(201).json({ success: true, data: newToken })
+      return new Response(JSON.stringify({ success: true, data: newToken }), { status: 201, headers })
     } catch (e) {
-      return res.status(400).json({ success: false, error: e.message })
+      return new Response(JSON.stringify({ success: false, error: e.message }), { status: 400, headers })
     }
   }
 
-  // DELETE ?noteId=xxx - Revoke
-  if (req.method === 'DELETE') {
+  // DELETE
+  if (method === 'DELETE') {
     const idx = tokens.findIndex(t => t.noteId === noteId)
     if (idx >= 0) {
       tokens[idx].revoked = true
-      return res.status(200).json({ success: true })
+      return new Response(JSON.stringify({ success: true }), { headers })
     }
-    return res.status(404).json({ success: false, error: 'Not found' })
+    return new Response(JSON.stringify({ success: false, error: 'Not found' }), { status: 404, headers })
   }
 
-  return res.status(405).json({ error: 'Method not allowed' })
+  return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers })
 }
