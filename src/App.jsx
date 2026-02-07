@@ -10,6 +10,9 @@ import { useKeyboardShortcuts } from './hooks/useKeyboard'
 import { gistStorage } from './lib/gistStorage'
 
 function AppContent() {
+  // Get notes from context
+  const { notes, importNotes, loading } = useNotes()
+  
   // Check if we're on a share page
   const [isSharePage, setIsSharePage] = useState(false)
   const [shareParams, setShareParams] = useState(null)
