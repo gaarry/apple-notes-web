@@ -108,8 +108,14 @@ function AppContent() {
   }, [])
 
   const handleSaveToCloud = useCallback(async (notesOverride = null) => {
+    const notesToSave = notesOverride || notes
+    if (!notesToSave || !Array.isArray(notesToSave)) {
+      setCloudSaveStatus({ type: 'error', message: 'No notes to save' })
+      return
+    }
+    
     setCloudSaveStatus({ type: 'info', message: 'Saving to cloud...' })
-    const result = await gistStorage.saveNotes(notesOverride || notes)
+    const result = await gistStorage.saveNotes(notesToSave)
     if (result.success) {
       setCloudSaveStatus({
         type: 'success',
@@ -140,7 +146,9 @@ function AppContent() {
       clearTimeout(autoSaveTimeoutRef.current)
     }
     autoSaveTimeoutRef.current = setTimeout(() => {
-      gistStorage.saveNotes(notes)
+      if (notes && Array.isArray(notes)) {
+        gistStorage.saveNotes(notes)
+      }
     }, 1500)
 
     return () => {
