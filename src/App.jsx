@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { NotesProvider, useNotes } from './context/NotesContext.jsx'
 import Sidebar from './components/Sidebar/Sidebar'
 import Editor from './components/Editor/Editor'
@@ -290,6 +291,7 @@ function App() {
   return (
     <NotesProvider>
       <AppContent />
+      <Analytics />
     </NotesProvider>
   )
 }
